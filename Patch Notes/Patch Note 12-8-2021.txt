@@ -1,4 +1,4 @@
-# Mechanics
+# System
 - Clamped camera panning
 - Created PlayerStats to store player statistics
 - Added sell turret function

@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class WayPoints : MonoBehaviour
 {
-    static public Transform[] wayPoints;
+    private Transform[] wayPoints;
 
     private void Awake()
     {
@@ -13,5 +11,10 @@ public class WayPoints : MonoBehaviour
         {
             wayPoints[i] = transform.GetChild(i);
         }
+    }
+
+    public Transform[] GetWayPoints()
+    {
+        return wayPoints;
     }
 }

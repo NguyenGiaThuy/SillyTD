@@ -12,36 +12,25 @@ public class Mob : MonoBehaviour
     [SerializeField]
     private int killResearchPoint;
 
+    private Transform[] wayPointsToMove;
     private int nextWayPointIndex;
-    private Vector3 directionToMove;
-    private Transform waypointToMove;
-
-    private void Awake()
-    {
-        nextWayPointIndex = 0;
-    }
-
-    private void Start()
-    {
-        waypointToMove = WayPoints.wayPoints[nextWayPointIndex];
-        directionToMove = waypointToMove.position - transform.position;
-        transform.rotation = Quaternion.LookRotation(directionToMove);
-    }
+    private Vector3 nextDirection;
 
     private void FixedUpdate()
     {
-        transform.Translate(directionToMove.normalized * movementSpeed * Time.deltaTime, Space.World);
-        Quaternion lookRotation = Quaternion.LookRotation(directionToMove);
+        transform.Translate(nextDirection.normalized * movementSpeed * Time.deltaTime, Space.World);
+        Quaternion lookRotation = Quaternion.LookRotation(nextDirection);
         transform.rotation = Quaternion.SlerpUnclamped(transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
 
         // If destination is reached, find next destination 
-        if (Vector3.Distance(waypointToMove.position, transform.position) <= 0.1f)
+        Transform nextWayPoint = wayPointsToMove[nextWayPointIndex];
+        if (Vector3.Distance(nextWayPoint.position, transform.position) <= 0.1f)
         {
-            if (nextWayPointIndex < WayPoints.wayPoints.Length - 1)
+            if (nextWayPointIndex + 1 < wayPointsToMove.Length)
             {
                 nextWayPointIndex++;
-                waypointToMove = GetNextWayPoint(nextWayPointIndex);
-                directionToMove = waypointToMove.position - transform.position;
+                nextWayPoint = wayPointsToMove[nextWayPointIndex];
+                nextDirection = nextWayPoint.position - transform.position;
             }
         }
     }
@@ -51,28 +40,31 @@ public class Mob : MonoBehaviour
         PlayerStats.credit += killCredit;
     }
 
-    private Transform GetNextWayPoint(int nextWayPointIndex)
+    public void SetPath(WayPoints wayPoints)
     {
-        return WayPoints.wayPoints[nextWayPointIndex];
+        wayPointsToMove = wayPoints.GetWayPoints();
+        nextWayPointIndex = 0;
+        nextDirection = wayPointsToMove[nextWayPointIndex].position - transform.position;
+        transform.rotation = Quaternion.LookRotation(nextDirection);
     }
 
-    public float GetPathLengthFromEndPoint()
+    public float GetCurrentPathLength()
     {
         float pathLength = 0f;
-        int tempNextWayPoint = nextWayPointIndex;
-        Transform pointA = transform;
-        Transform pointB = WayPoints.wayPoints[tempNextWayPoint];
+        int tempNextWayPointIndex = nextWayPointIndex;
+        Vector3 currentPosition = transform.position;
+        Vector3 nextWayPointPosition = wayPointsToMove[tempNextWayPointIndex].position;
 
         // Calculate the total length of moving path
-        while (tempNextWayPoint < WayPoints.wayPoints.Length)
+        while (tempNextWayPointIndex < wayPointsToMove.Length)
         {
-            pathLength += Vector3.Distance(pointA.position, pointB.position);
-            tempNextWayPoint++;
+            pathLength += Vector3.Distance(currentPosition, nextWayPointPosition);
+            tempNextWayPointIndex++;
 
-            if (tempNextWayPoint < WayPoints.wayPoints.Length)
+            if (tempNextWayPointIndex < wayPointsToMove.Length)
             {
-                pointA = pointB;
-                pointB = WayPoints.wayPoints[tempNextWayPoint];
+                currentPosition = nextWayPointPosition;
+                nextWayPointPosition = wayPointsToMove[tempNextWayPointIndex].position;
             }
         }
 

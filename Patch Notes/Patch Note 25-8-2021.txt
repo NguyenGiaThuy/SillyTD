@@ -1,0 +1,7 @@
+# System
+- Removed Spawner class
+- Renamed End class to Destination
+- Refined WayPoints class
+- Add new class MobsPath to manage:
+	+ Spawn location
+	+ Mob path

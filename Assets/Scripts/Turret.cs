@@ -67,7 +67,7 @@ public abstract class Turret : MonoBehaviour
             if (!TargetLocked())
             {
                 Mob[] mobs = FindObjectsOfType<Mob>();
-                target = GetClosestTargetFromEndPoint(mobs);
+                target = GetClosestTargetFromDestination(mobs);
             }
             yield return new WaitForSeconds(searchInterval);
         }
@@ -78,14 +78,14 @@ public abstract class Turret : MonoBehaviour
         return (target != null && Vector3.Distance(transform.position, target.position) <= range);
     }
 
-    private Transform GetClosestTargetFromEndPoint(Mob[] mobs)
+    private Transform GetClosestTargetFromDestination(Mob[] mobs)
     {
         Transform closestTargetFromEndPoint = null;
         float closestDistanceFromEndPoint = float.PositiveInfinity;
         foreach (var mob in mobs)
         {
             float targetDistance = Vector3.Distance(transform.position, mob.transform.position);
-            float targetDistanceFromEndPoint = mob.GetPathLengthFromEndPoint();
+            float targetDistanceFromEndPoint = mob.GetCurrentPathLength();
             if (targetDistance <= range && targetDistanceFromEndPoint < closestDistanceFromEndPoint)
             {
                 closestTargetFromEndPoint = mob.transform;

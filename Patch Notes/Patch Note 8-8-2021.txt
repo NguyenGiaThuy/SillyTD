@@ -10,7 +10,7 @@
 - Fixed zombie animation
 - Adjusted turret and node size
 
-# Mechanics
+# System
 - Added shooting logics
 - Added GameManager for calculating and displaying credit
 - Added TurretManager for managing turret list

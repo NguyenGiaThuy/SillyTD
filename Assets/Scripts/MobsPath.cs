@@ -1,11 +1,11 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
-public class Spawner : MonoBehaviour
+public class MobsPath : MonoBehaviour
 {
     [Header("Specifications")]
+    [SerializeField]
+    private float spawnAfter;
     [SerializeField]
     private int mobsPerWave;
     [SerializeField]
@@ -19,15 +19,15 @@ public class Spawner : MonoBehaviour
 
     [Header("Unity Objects")]
     [SerializeField]
-    private GameObject[] mobWaves;
+    private GameObject[] mobsToSpawn;
+    [SerializeField]
+    private GameObject wayPoints;
 
-    private TMP_Text waveCountdownText;
     private int nextMobWaves;
 
     private void Awake()
     {
         nextMobWaves = 0;
-        waveCountdownText = GameObject.Find("WaveCountdownText").GetComponent<TMP_Text>();   
     }
 
     private void Start()
@@ -37,20 +37,27 @@ public class Spawner : MonoBehaviour
 
     private IEnumerator Spawn()
     {
+        // Begin wave after
+        yield return new WaitForSeconds(spawnAfter);
+
+        // Begin spawning
         int tempNextMobWaves = nextMobWaves;
-        while (tempNextMobWaves < mobWaves.Length)
+        while (tempNextMobWaves < mobsToSpawn.Length)
         {
             // Spawn mobs according to timing
             int tempMobsPerWave = mobsPerWave;
             while (tempMobsPerWave > 0)
             {
-                Instantiate(mobWaves[tempNextMobWaves], transform.position, transform.rotation);
+                // Spawn and set path for mobs
+                GameObject spawnedMob = Instantiate(mobsToSpawn[tempNextMobWaves], transform.position, transform.rotation);
+                spawnedMob.GetComponent<Mob>().SetPath(wayPoints.GetComponent<WayPoints>());
                 tempMobsPerWave--;
 
                 if (tempMobsPerWave % mobsPerGroup == 0)
                 {
                     yield return new WaitForSeconds(timeBetweenGroups);
-                } else
+                }
+                else
                 {
                     yield return new WaitForSeconds(timeBetweenMobs);
                 }
@@ -64,21 +71,18 @@ public class Spawner : MonoBehaviour
 
             // End coroutine if the last wave ends
             tempNextMobWaves++;
-            if (tempNextMobWaves == mobWaves.Length)
+            if (tempNextMobWaves == mobsToSpawn.Length)
             {
-                waveCountdownText.text = "END";
                 yield break;
             }
 
-            // Countdown next wave and show UI
+            // Countdown next wave
             int countDown = Mathf.RoundToInt(timeBetweenWaves);
             while (countDown > 0)
             {
-                waveCountdownText.text = countDown.ToString();
                 yield return new WaitForSeconds(1f);
                 countDown--;
             }
-            waveCountdownText.text = "";  
         }
     }
 }

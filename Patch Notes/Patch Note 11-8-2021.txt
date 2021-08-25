@@ -1,4 +1,4 @@
-# Mechanics
+# System
 - Added BuildManager to help:
 	+ Build turrets
 	+ Upgrade turrets (under development)
