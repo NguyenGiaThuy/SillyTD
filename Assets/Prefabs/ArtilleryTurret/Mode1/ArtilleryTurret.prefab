@@ -250,6 +250,7 @@ MonoBehaviour:
   partToElevate: {fileID: 2070505958040207379}
   firePoint: {fileID: 1106003865522855168}
   fireEffect: {fileID: 1692517446758730, guid: 08fd1b80cc24cc8439f45fda3c558255, type: 3}
+  turretState: 0
   bullet: {fileID: 1457207558488660543, guid: dfcb2f0138a215840a086485d0c1de30, type: 3}
 --- !u!1 &7151122210392594791
 GameObject:

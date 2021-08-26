@@ -1,69 +1,103 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ArtilleryTurret : Turret
 {
+    public TurretState turretState;
+
     [Header("Unity Specifications")]
     [SerializeField]
     private GameObject bullet;
 
     private void Awake()
     {
-        fireCountdown = fireCooldown;
+        fireCountdown = fireCooldown - 1f;
     }
 
     private void Start()
     {
+        turretState = TurretState.Idling;
         StartCoroutine(SearchTarget());
     }
 
     private void Update()
     {
+        switch (turretState)
+        {
+            case TurretState.Idling:
+                Idle();
+                break;
+            case TurretState.Moving:
+                Move();
+                break;
+            case TurretState.Firing:
+                Fire();
+                break;
+        }
+
+        // Reload
+        if (fireCountdown <= fireCooldown) {
+            fireCountdown += Time.deltaTime;
+        }
+    }
+
+    protected override void Idle()
+    {
+        if (target != null)
+        {
+            turretState = TurretState.Moving;
+        } 
+    }
+
+    protected override void Move()
+    {
         if (target == null)
         {
-            if (fireCountdown <= fireCooldown)
-            {
-                fireCountdown += Time.deltaTime;
-            }
-
+            turretState = TurretState.Idling;
             return;
         }
 
         Vector3 direction = target.position - transform.position;
-        RotateTurret(direction);
-        ElevateGuns(direction);
+        Rotate(direction);
+        Elevate(direction);
 
-        // Only shoot when not on cooldown or on rotation
-        if (fireCountdown >= fireCooldown && RotationDone(direction))
+        // Done rotation and elevation
+        bool isRotated = Quaternion.Angle(partToRotate.transform.rotation, Quaternion.LookRotation(direction)) <= 10f;
+        bool isElevated = true;
+        if (isRotated && isElevated)
         {
-            fireCountdown = 0f;
-            Fire();
+            turretState = TurretState.Firing;
         }
-        fireCountdown += Time.deltaTime;
     }
 
     protected override void Fire()
     {
-        ParticleSystem particle = Instantiate(fireEffect, firePoint.transform.position, firePoint.transform.rotation, firePoint.transform).GetComponent<ParticleSystem>();
-        Destroy(particle.gameObject, particle.main.duration);
-        Bullet currentBullet = Instantiate(bullet, firePoint.transform.position, firePoint.transform.rotation).GetComponent<Bullet>();
-        currentBullet.target = target;
+        if (target == null)
+        {
+            turretState = TurretState.Idling;
+            return;
+        }
+
+        // Fire if reloaded
+        if (fireCountdown > fireCooldown)
+        {
+            ParticleSystem particle = Instantiate(fireEffect, firePoint.transform.position, firePoint.transform.rotation, firePoint.transform).GetComponent<ParticleSystem>();
+            Destroy(particle.gameObject, particle.main.duration);
+            Bullet currentBullet = Instantiate(bullet, firePoint.transform.position, firePoint.transform.rotation).GetComponent<Bullet>();
+            currentBullet.target = target;
+            fireCountdown = 0f;
+        }
+
+        turretState = TurretState.Moving;
     }
 
-    protected override void RotateTurret(Vector3 direction)
+    private void Rotate(Vector3 direction)
     {
         direction.y = 0f;
         Quaternion lookRotation = Quaternion.LookRotation(direction);
         partToRotate.transform.rotation = Quaternion.LerpUnclamped(partToRotate.transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
     }
 
-    private bool RotationDone(Vector3 direction)
-    {
-        return Quaternion.Angle(partToRotate.transform.rotation, Quaternion.LookRotation(direction)) <= 10f;
-    }
-
-    protected override void ElevateGuns(Vector3 direction)
+    private void Elevate(Vector3 direction)
     {
         // Calculate angle by cosine function
         float targetDistance = direction.magnitude;

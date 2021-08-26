@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Turret : MonoBehaviour
@@ -35,6 +34,13 @@ public abstract class Turret : MonoBehaviour
     protected Transform target;
     protected float fireCountdown;
 
+    public enum TurretState
+    {
+        Idling,
+        Moving,
+        Firing,
+    }
+
     public int GetCost()
     {
         return cost;
@@ -63,19 +69,16 @@ public abstract class Turret : MonoBehaviour
         // Only search on interval
         while (true)
         {
-            // If target is in range, do not change target
-            if (!TargetLocked())
+            bool targetLocked = target != null && Vector3.Distance(transform.position, target.position) <= range;
+
+            // If target is out of range, search new target
+            if (!targetLocked)
             {
                 Mob[] mobs = FindObjectsOfType<Mob>();
                 target = GetClosestTargetFromDestination(mobs);
             }
             yield return new WaitForSeconds(searchInterval);
         }
-    }
-
-    private bool TargetLocked()
-    {
-        return (target != null && Vector3.Distance(transform.position, target.position) <= range);
     }
 
     private Transform GetClosestTargetFromDestination(Mob[] mobs)
@@ -96,9 +99,9 @@ public abstract class Turret : MonoBehaviour
         return closestTargetFromEndPoint;
     }
 
+    protected abstract void Idle();
+    protected abstract void Move();
     protected abstract void Fire();
-    protected abstract void RotateTurret(Vector3 direction);
-    protected abstract void ElevateGuns(Vector3 direction);
 
     private void OnDrawGizmosSelected()
     {
