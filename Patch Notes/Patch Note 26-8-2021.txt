@@ -1,6 +1,0 @@
-# System
-- Re-added Spawner class with event
-- Refined MobsPath:
-	+ Has method subscribed to Spawner event
-- Refined Turret and ArtilleryTurret class:
-	+ Add TurretState

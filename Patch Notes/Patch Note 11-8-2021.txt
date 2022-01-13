@@ -1,9 +1,0 @@
-# System
-- Added BuildManager to help:
-	+ Build turrets
-	+ Upgrade turrets (under development)
-	+ Sell turret (under development)
-	+ Change turret mode (under development)
-	+ Manage credit
-- Added NodeUI to help manage UI when selecting a node
-- Redesign the hierarchy for turret and node

@@ -1,17 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Node : MonoBehaviour
 {
+    public bool Empty { get { return turret == null; } }
+
+    public GameObject turret;
     [SerializeField]
     private Color hoverColor;
 
+    // Hidden fields
     private Color initialColor;
     private Renderer nodeRenderer;
-    private GameObject turret;
 
-    private void Awake()
+    private void Start()
     {
         nodeRenderer = GetComponent<Renderer>();
         initialColor = nodeRenderer.material.color;
@@ -19,6 +21,9 @@ public class Node : MonoBehaviour
 
     private void OnMouseEnter()
     {
+        // Prevent highlighting ingame objects over UI
+        if (EventSystem.current.IsPointerOverGameObject()) return;
+
         nodeRenderer.material.color = hoverColor;
     }
 
@@ -29,18 +34,11 @@ public class Node : MonoBehaviour
 
     private void OnMouseDown()
     {
-        NodeGUI.nodeUI.SelectNode(this);
-        BuildManager.buildManager.SelectNode(this);
-    }
+        // Prevent pressing ingame objects over UI
+        if (EventSystem.current.IsPointerOverGameObject()) return;
 
-    public GameObject GetTurret()
-    {
-        return turret;
-    }
-
-    public void SetTurret(GameObject turretToSet)
-    {
-        turret = turretToSet;
+        BuildManager.buildManager.selectedNode = this;
+        NodeUI.nodeUI.ShowPanel(this);
     }
 }
 
