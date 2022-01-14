@@ -5,13 +5,18 @@ public class ArtilleryShell : Projectile
     private void Start()
     {
         direction = target.transform.position - transform.position;
-        direction.y = transform.position.y;
-        GetComponent<Rigidbody>().AddForce(direction * speed * Random.Range(0.85f, 1.15f), ForceMode.Impulse);
+        Vector3 force = direction;
+        force.y = transform.position.y;
+        GetComponent<Rigidbody>().AddForce(force * speed * Random.Range(0.85f, 1.15f), ForceMode.Impulse);
         explosionRadius = sourceTurret.data.explosionRadius;
         Destroy(gameObject, 5f);
     }
 
-    private void Update() {}
+    private void Update() 
+    {
+        Quaternion lookRotation = Quaternion.LookRotation(direction);
+        partToRotatePrefab.transform.rotation = Quaternion.LerpUnclamped(partToRotatePrefab.transform.rotation, lookRotation, 10f * Time.deltaTime);
+    }
 
     private void OnCollisionEnter(Collision collision)
     {

@@ -39,7 +39,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3814067386591237309}
-  m_Mesh: {fileID: -8924516977915312044, guid: 6d5a1a679c4c4464eb4903ddb062037f, type: 3}
+  m_Mesh: {fileID: -5984970419347909279, guid: 6d5a1a679c4c4464eb4903ddb062037f, type: 3}
 --- !u!23 &304879357197633685
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -59,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 54f7c9c1372be1d4d8d259adb3087cfd, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -126,8 +126,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.1758267, y: 0.1781212, z: 0.37197158}
-  m_Center: {x: -0.0006479174, y: 0.0008347109, z: 0.24009646}
+  m_Size: {x: 0.1758267, y: 0.1781212, z: 0.55120826}
+  m_Center: {x: -0.0006479174, y: 0.0008347109, z: 0.32971483}
 --- !u!54 &2920754151135954576
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -142,7 +142,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 32
   m_CollisionDetection: 0
 --- !u!114 &7031333283626091103
 MonoBehaviour:

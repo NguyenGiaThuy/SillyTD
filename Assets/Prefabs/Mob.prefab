@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   armor: 1
-  healthPoints: 1000
+  healthPoints: 500
   movementSpeed: 5
   killCredits: 0
   killResearchPoints: 0
