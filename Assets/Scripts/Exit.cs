@@ -4,7 +4,7 @@ public class Exit : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == 10) 
+        if (other.gameObject.layer == LayerMask.NameToLayer("Mob")) 
         {
             Destroy(other.gameObject);
             GameManager.gameManager.playerStats.lives -= other.GetComponent<Mob>().lifeDamage;

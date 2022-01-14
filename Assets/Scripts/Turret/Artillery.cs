@@ -31,11 +31,16 @@ public class Artillery : AttackTurret
         // Fire if reloaded
         if (fireCountdown > data.fireCooldown)
         {
-            //ParticleSystem particle = Instantiate(fireEffect, firePoint.transform.position, firePoint.transform.rotation, firePoint.transform).GetComponent<ParticleSystem>();
-            //Destroy(particle.gameObject, particle.main.duration);
-            ArtilleryShell artilleryShell = Instantiate(projectilePrefab, firePointPrefab.transform.position, firePointPrefab.transform.rotation).GetComponent<ArtilleryShell>();
-            artilleryShell.sourceTurret = this;
-            artilleryShell.target = target;
+            audioSource.Play();
+
+            foreach (GameObject firePointPrefab in firePointPrefabs)
+            {
+                foreach (GameObject fireEffectPrefab in fireEffectPrefabs) fireEffectPrefab.GetComponent<ParticleSystem>().Play();
+                ArtilleryShell artilleryShell = Instantiate(projectilePrefab, firePointPrefab.transform.position, firePointPrefab.transform.rotation).GetComponent<ArtilleryShell>();
+                artilleryShell.sourceTurret = this;
+                artilleryShell.target = target;
+            }
+
             fireCountdown = 0f;
         }
 

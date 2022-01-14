@@ -6,8 +6,9 @@ public class ArtilleryShell : Projectile
     {
         direction = target.transform.position - transform.position;
         direction.y = transform.position.y;
-        GetComponent<Rigidbody>().AddForce(direction * speed, ForceMode.Impulse);
+        GetComponent<Rigidbody>().AddForce(direction * speed * Random.Range(0.85f, 1.15f), ForceMode.Impulse);
         explosionRadius = sourceTurret.data.explosionRadius;
+        Destroy(gameObject, 5f);
     }
 
     private void Update() {}
@@ -20,9 +21,12 @@ public class ArtilleryShell : Projectile
     protected override void TargetHit()
     {
         GameObject impactEffect = Instantiate(impactEffectPrefab, transform.position, transform.rotation);
+        AudioSource audioSource = impactEffect.AddComponent<AudioSource>();
+        audioSource.spatialBlend = 1f;
+        audioSource.PlayOneShot(soundEffects[0]);
 
         // Create an explosion
-        Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius, 1 << 10);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius, 1 << LayerMask.NameToLayer("Mob"));
         foreach (Collider collider in colliders)
         {
             // Calculate damage for each armor type
@@ -40,7 +44,7 @@ public class ArtilleryShell : Projectile
             collider.GetComponent<Mob>().Hit(Mathf.RoundToInt(finalDamage));
         }
 
-        Destroy(impactEffect, 0.5f);
+        Destroy(impactEffect, impactEffect.GetComponent<ParticleSystem>().main.duration);
         Destroy(gameObject);
     }
 }

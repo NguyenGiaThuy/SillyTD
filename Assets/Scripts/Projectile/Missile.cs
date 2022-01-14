@@ -7,7 +7,7 @@ public class Missile : Projectile
         GameObject impactEffect = Instantiate(impactEffectPrefab, transform.position, transform.rotation);
 
         // Create an explosion
-        Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius, 1 << 10);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius, 1 << LayerMask.NameToLayer("Mob"));
         foreach(Collider collider in colliders) 
         {
             // Calculate damage for each armor type
@@ -24,8 +24,8 @@ public class Missile : Projectile
 
             collider.GetComponent<Mob>().Hit(Mathf.RoundToInt(finalDamage));
         }
-        
-        Destroy(impactEffect, 0.5f);
+
+        Destroy(impactEffect, impactEffect.GetComponent<ParticleSystem>().main.duration);
         Destroy(gameObject);   
     }
 }

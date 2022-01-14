@@ -31,11 +31,13 @@ public class MissileLauncher : AttackTurret
         // Fire if reloaded
         if (fireCountdown > data.fireCooldown)
         {
-            //ParticleSystem particle = Instantiate(fireEffect, firePoint.transform.position, firePoint.transform.rotation, firePoint.transform).GetComponent<ParticleSystem>();
-            //Destroy(particle.gameObject, particle.main.duration);
-            Missile missile = Instantiate(projectilePrefab, firePointPrefab.transform.position, projectilePrefab.transform.rotation).GetComponent<Missile>();
-            missile.sourceTurret = this;
-            missile.target = target;
+            foreach (GameObject firePointPrefab in firePointPrefabs)
+            {
+                foreach (GameObject fireEffectPrefab in fireEffectPrefabs) fireEffectPrefab.GetComponent<ParticleSystem>().Play();
+                Missile missile = Instantiate(projectilePrefab, firePointPrefab.transform.position, projectilePrefab.transform.rotation).GetComponent<Missile>();
+                missile.sourceTurret = this;
+                missile.target = target;
+            }
             fireCountdown = 0f;
         }
 

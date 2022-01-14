@@ -129,4 +129,6 @@ MonoBehaviour:
   sourceTurret: {fileID: 0}
   target: {fileID: 0}
   partToRotatePrefab: {fileID: 7427795956703178931}
-  impactEffectPrefab: {fileID: 7605920647021744018, guid: abc6eab1753188946bf3d9282e8310b0, type: 3}
+  impactEffectPrefab: {fileID: 1828176872806910, guid: 64891a0eb28db934898420d80ca07cb3,
+    type: 3}
+  soundEffects: []

@@ -16,6 +16,8 @@ public abstract class Projectile : MonoBehaviour
     protected GameObject partToRotatePrefab;
     [SerializeField]
     protected GameObject impactEffectPrefab;
+    [SerializeField]
+    protected AudioClip[] soundEffects;
 
     // Hidden fields
     protected Vector3 direction;
