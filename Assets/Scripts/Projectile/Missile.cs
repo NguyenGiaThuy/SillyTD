@@ -5,6 +5,9 @@ public class Missile : Projectile
     protected override void TargetHit()
     {
         GameObject impactEffect = Instantiate(impactEffectPrefab, transform.position, transform.rotation);
+        AudioSource audioSource = impactEffect.AddComponent<AudioSource>();
+        audioSource.spatialBlend = 0.9f;
+        audioSource.PlayOneShot(soundEffects[0]);
 
         // Create an explosion
         Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius, 1 << LayerMask.NameToLayer("Mob"));
@@ -26,6 +29,10 @@ public class Missile : Projectile
         }
 
         Destroy(impactEffect, impactEffect.GetComponent<ParticleSystem>().main.duration);
-        Destroy(gameObject);   
+        ParticleSystem trailEffect = trailEffectPrefab.GetComponent<ParticleSystem>();
+        trailEffect.transform.parent = null;
+        trailEffect.Stop();
+        Destroy(trailEffect.gameObject, 5f);
+        Destroy(gameObject);
     }
 }

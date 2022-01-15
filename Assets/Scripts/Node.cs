@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Node : MonoBehaviour
+public class Node : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IPointerExitHandler
 {
     public bool Empty { get { return turret == null; } }
 
@@ -19,26 +19,23 @@ public class Node : MonoBehaviour
         initialColor = nodeRenderer.material.color;
     }
 
-    private void OnMouseEnter()
+    public void OnPointerEnter(PointerEventData eventData)
     {
-        // Prevent highlighting ingame objects over UI
-        if (EventSystem.current.IsPointerOverGameObject()) return;
-
         nodeRenderer.material.color = hoverColor;
     }
 
-    private void OnMouseExit()
+    public void OnPointerDown(PointerEventData eventData)
     {
-        nodeRenderer.material.color = initialColor;
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            BuildManager.buildManager.selectedNode = this;
+            NodeUI.nodeUI.ShowPanel(this);
+        }
     }
 
-    private void OnMouseDown()
+    public void OnPointerExit(PointerEventData eventData)
     {
-        // Prevent pressing ingame objects over UI
-        if (EventSystem.current.IsPointerOverGameObject()) return;
-
-        BuildManager.buildManager.selectedNode = this;
-        NodeUI.nodeUI.ShowPanel(this);
+        nodeRenderer.material.color = initialColor;
     }
 }
 

@@ -31,10 +31,12 @@ public class MissileLauncher : AttackTurret
         // Fire if reloaded
         if (fireCountdown > data.fireCooldown)
         {
+            audioSource.Play();
+
             foreach (GameObject firePointPrefab in firePointPrefabs)
             {
                 foreach (GameObject fireEffectPrefab in fireEffectPrefabs) fireEffectPrefab.GetComponent<ParticleSystem>().Play();
-                Missile missile = Instantiate(projectilePrefab, firePointPrefab.transform.position, projectilePrefab.transform.rotation).GetComponent<Missile>();
+                Missile missile = Instantiate(projectilePrefab, firePointPrefab.transform.position, firePointPrefab.transform.rotation).GetComponent<Missile>();
                 missile.sourceTurret = this;
                 missile.target = target;
             }

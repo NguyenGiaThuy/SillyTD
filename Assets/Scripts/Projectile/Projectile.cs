@@ -13,6 +13,10 @@ public abstract class Projectile : MonoBehaviour
 
     [Header("Mandatory", order = 1)]
     [SerializeField]
+    protected GameObject meshPrefab;
+    [SerializeField]
+    protected GameObject trailEffectPrefab;
+    [SerializeField]
     protected GameObject partToRotatePrefab;
     [SerializeField]
     protected GameObject impactEffectPrefab;

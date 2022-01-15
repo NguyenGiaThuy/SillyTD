@@ -31,10 +31,12 @@ public class StandardTurret : AttackTurret
         // Fire if reloaded
         if (fireCountdown > data.fireCooldown)
         {
+            audioSource.Play();
+
             foreach (GameObject firePointPrefab in firePointPrefabs)
             {
                 foreach (GameObject fireEffectPrefab in fireEffectPrefabs) fireEffectPrefab.GetComponent<ParticleSystem>().Play();
-                StandardShell standardShell = Instantiate(projectilePrefab, firePointPrefab.transform.position, projectilePrefab.transform.rotation).GetComponent<StandardShell>();
+                StandardShell standardShell = Instantiate(projectilePrefab, firePointPrefab.transform.position, firePointPrefab.transform.rotation).GetComponent<StandardShell>();
                 standardShell.target = target;
                 standardShell.sourceTurret = this;
             }

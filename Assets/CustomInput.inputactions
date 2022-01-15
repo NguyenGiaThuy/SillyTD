@@ -1,0 +1,82 @@
+{
+    "name": "CustomInput",
+    "maps": [
+        {
+            "name": "Camera",
+            "id": "16b1eb83-d234-40b6-af65-d53fb4ba2b1b",
+            "actions": [
+                {
+                    "name": "Pan",
+                    "type": "PassThrough",
+                    "id": "f8208d3c-dc61-412a-bb8f-e17316c92c34",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Zoom",
+                    "type": "PassThrough",
+                    "id": "0d11fc90-fa52-4157-8a44-de81983bb116",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "db58c264-a683-4aaf-b212-3fde1ec7f951",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pan",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9f0e8454-aeef-4c56-b76e-ab63e8861f65",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "Normalize(min=-1,max=1)",
+                    "groups": "",
+                    "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Gameplay",
+            "id": "313590e1-99c3-4289-96f7-7b9945bb8b84",
+            "actions": [
+                {
+                    "name": "CancelNodeSelection",
+                    "type": "Button",
+                    "id": "350325fc-db28-4d78-9b05-2ae91d3121c9",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "c3eee406-4eaa-4286-bc62-d28fa754a581",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CancelNodeSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

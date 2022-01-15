@@ -61,16 +61,16 @@ public class GameManager : MonoBehaviour
         switch(State)
         {
             case GameState.PausedFromPreparing:
-                if (Input.GetKeyDown(KeyCode.Escape)) SetState(GameState.Preparing);
+                //if (Input.GetKeyDown(KeyCode.Escape)) SetState(GameState.Preparing);
                 break;
             case GameState.PausedFromPlaying:
-                if (Input.GetKeyDown(KeyCode.Escape)) SetState(GameState.Playing);
+                //if (Input.GetKeyDown(KeyCode.Escape)) SetState(GameState.Playing);
                 break;
             case GameState.Preparing:
-                if (Input.GetKeyDown(KeyCode.Escape)) SetState(GameState.PausedFromPreparing);
+                //if (Input.GetKeyDown(KeyCode.Escape)) SetState(GameState.PausedFromPreparing);
                 break;
             case GameState.Playing:
-                if (Input.GetKeyDown(KeyCode.Escape)) SetState(GameState.PausedFromPlaying);
+                //if (Input.GetKeyDown(KeyCode.Escape)) SetState(GameState.PausedFromPlaying);
                 break;
             case GameState.Victorious:
                 // Logics for victory

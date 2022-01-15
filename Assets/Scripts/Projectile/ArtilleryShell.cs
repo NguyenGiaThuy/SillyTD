@@ -7,7 +7,7 @@ public class ArtilleryShell : Projectile
         direction = target.transform.position - transform.position;
         Vector3 force = direction;
         force.y = transform.position.y;
-        GetComponent<Rigidbody>().AddForce(force * speed * Random.Range(0.85f, 1.15f), ForceMode.Impulse);
+        GetComponent<Rigidbody>().AddForce(force * speed * Random.Range(0.9f, 1.1f), ForceMode.Impulse);
         explosionRadius = sourceTurret.data.explosionRadius;
         Destroy(gameObject, 5f);
     }
@@ -27,7 +27,7 @@ public class ArtilleryShell : Projectile
     {
         GameObject impactEffect = Instantiate(impactEffectPrefab, transform.position, transform.rotation);
         AudioSource audioSource = impactEffect.AddComponent<AudioSource>();
-        audioSource.spatialBlend = 1f;
+        audioSource.spatialBlend = 0.9f;
         audioSource.PlayOneShot(soundEffects[0]);
 
         // Create an explosion
@@ -50,6 +50,10 @@ public class ArtilleryShell : Projectile
         }
 
         Destroy(impactEffect, impactEffect.GetComponent<ParticleSystem>().main.duration);
+        ParticleSystem trailEffect = trailEffectPrefab.GetComponent<ParticleSystem>();
+        trailEffect.transform.parent = null;
+        trailEffect.Stop();
+        Destroy(trailEffect.gameObject, 5f);
         Destroy(gameObject);
     }
 }
