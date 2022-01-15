@@ -4955,13 +4955,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 9092386555837008213}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3de366a61f4776940a825b8e20ade625, type: 3}
+  m_Script: {fileID: 11500000, guid: 50b0b1e2be5f72e4292be39a35fc94d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 20
   sourceTurret: {fileID: 0}
   target: {fileID: 0}
-  MeshPrefab: {fileID: 3814067386591237309}
+  meshPrefab: {fileID: 3814067386591237309}
   trailEffectPrefab: {fileID: 4473581932464229785}
   partToRotatePrefab: {fileID: 9092386555837008213}
   impactEffectPrefab: {fileID: 1121192042590650, guid: e1b08032bec16ba4eb1ae23cbd572664,

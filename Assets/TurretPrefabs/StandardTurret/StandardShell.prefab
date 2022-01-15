@@ -111,7 +111,10 @@ MonoBehaviour:
   speed: 30
   sourceTurret: {fileID: 0}
   target: {fileID: 0}
+  meshPrefab: {fileID: 0}
+  trailEffectPrefab: {fileID: 0}
   partToRotatePrefab: {fileID: 6347708187636270098}
   impactEffectPrefab: {fileID: 1337198075554910, guid: 25c7aa9ad705fe143a4d71c1c8deb7d4,
     type: 3}
-  soundEffects: []
+  soundEffects:
+  - {fileID: 8300000, guid: a35d31622c518254b8ad93e4222f9118, type: 3}

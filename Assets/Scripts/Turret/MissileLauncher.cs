@@ -19,30 +19,4 @@ public class MissileLauncher : AttackTurret
     {
         data = Resources.Load<AttackTurretData>("MissileLauncherData/MissileLauncherData" + level);
     }
-
-    protected override void Fire()
-    {
-        if (target == null)
-        {
-            SetState(TurretState.Idling);
-            return;
-        }
-
-        // Fire if reloaded
-        if (fireCountdown > data.fireCooldown)
-        {
-            audioSource.Play();
-
-            foreach (GameObject firePointPrefab in firePointPrefabs)
-            {
-                foreach (GameObject fireEffectPrefab in fireEffectPrefabs) fireEffectPrefab.GetComponent<ParticleSystem>().Play();
-                Missile missile = Instantiate(projectilePrefab, firePointPrefab.transform.position, firePointPrefab.transform.rotation).GetComponent<Missile>();
-                missile.sourceTurret = this;
-                missile.target = target;
-            }
-            fireCountdown = 0f;
-        }
-
-        SetState(TurretState.Rotating);
-    }
 }

@@ -164,5 +164,30 @@ public abstract class AttackTurret : Turret
         if (Quaternion.Angle(partToRotatePrefab.transform.rotation, Quaternion.LookRotation(direction)) <= 10f) SetState(TurretState.Firing);
     }
 
-    protected abstract void Fire();
+    private void Fire()
+    {
+        if (target == null)
+        {
+            SetState(TurretState.Idling);
+            return;
+        }
+
+        // Fire if reloaded
+        if (fireCountdown > data.fireCooldown)
+        {
+            audioSource.Play();
+
+            foreach (GameObject firePointPrefab in firePointPrefabs)
+            {
+                foreach (GameObject fireEffectPrefab in fireEffectPrefabs) fireEffectPrefab.GetComponent<ParticleSystem>().Play();
+                Projectile projectile = Instantiate(projectilePrefab, firePointPrefab.transform.position, firePointPrefab.transform.rotation).GetComponent<Projectile>();
+                projectile.sourceTurret = this;
+                projectile.target = target;
+            }
+
+            fireCountdown = 0f;
+        }
+
+        SetState(TurretState.Rotating);
+    }
 }
