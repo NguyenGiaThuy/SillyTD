@@ -6,8 +6,9 @@ public class ArtilleryShell : Projectile
     {
         direction = target.transform.position - transform.position;
         Vector3 force = direction;
-        force.y = transform.position.y;
-        GetComponent<Rigidbody>().AddForce(force * speed * Random.Range(0.9f, 1.1f), ForceMode.Impulse);
+        Vector3 offsetForce = force;
+        offsetForce.y = transform.position.y - 1f;
+        GetComponent<Rigidbody>().AddForce((force.normalized + offsetForce) * speed * Random.Range(0.9f, 1.1f), ForceMode.Impulse);
         explosionRadius = sourceTurret.data.explosionRadius;
         Destroy(gameObject, 5f);
     }
