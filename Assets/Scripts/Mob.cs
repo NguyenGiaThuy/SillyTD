@@ -22,6 +22,8 @@ public class Mob : MonoBehaviour
     public Transform[] wayPointsToMove;
     public int nextWayPointIndex;
     public Vector3 nextDirection;
+    [SerializeField]
+    private GameObject hitEffectPrefab;
     
     private void Awake()
     {
@@ -85,6 +87,7 @@ public class Mob : MonoBehaviour
 
     public void Hit(int damage) {
         healthPoints -= damage;
+        hitEffectPrefab.GetComponent<ParticleSystem>().Play();
 
         if (healthPoints <= 0) {
             // Play animation

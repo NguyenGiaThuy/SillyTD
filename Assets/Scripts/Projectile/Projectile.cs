@@ -13,9 +13,15 @@ public abstract class Projectile : MonoBehaviour
 
     [Header("Mandatory", order = 1)]
     [SerializeField]
+    protected GameObject meshPrefab;
+    [SerializeField]
+    protected GameObject trailEffectPrefab;
+    [SerializeField]
     protected GameObject partToRotatePrefab;
     [SerializeField]
     protected GameObject impactEffectPrefab;
+    [SerializeField]
+    protected AudioClip[] soundEffects;
 
     // Hidden fields
     protected Vector3 direction;
@@ -43,9 +49,9 @@ public abstract class Projectile : MonoBehaviour
         }
         else
         {
+            // Play SFXs and VFXs
+            EffectsOnImpacted();
             Destroy(gameObject);
-            GameObject impactEffect = Instantiate(impactEffectPrefab, transform.position, transform.rotation);
-            Destroy(impactEffect, 0.5f);
         }
 
         transform.Translate(direction.normalized * speed * Time.deltaTime, Space.World);
@@ -56,5 +62,41 @@ public abstract class Projectile : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, explosionRadius);
     }
 
-    protected abstract void TargetHit();
+    protected void TargetHit()
+    {
+        // Play SFXs and VFXs
+        EffectsOnImpacted();
+
+        // Create an explosion
+        Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius, 1 << LayerMask.NameToLayer("Mob"));
+        foreach (Collider collider in colliders)
+        {
+            int finalDamage = GetFinalDamge();
+            collider.GetComponent<Mob>().Hit(finalDamage);
+        }
+        Destroy(gameObject);
+    }
+
+    private void EffectsOnImpacted()
+    {
+        // Explosion
+        GameObject impactEffect = Instantiate(impactEffectPrefab, transform.position, transform.rotation);
+        Destroy(impactEffect, impactEffect.GetComponent<ParticleSystem>().main.duration);
+
+        // Explosion sound
+        AudioSource audioSource = impactEffect.AddComponent<AudioSource>();
+        audioSource.spatialBlend = 0.9f;
+        if (soundEffects != null) audioSource.PlayOneShot(soundEffects[0]);
+
+        // Trail effect for projectile
+        if (trailEffectPrefab != null)
+        {
+            ParticleSystem trailEffect = trailEffectPrefab.GetComponent<ParticleSystem>();
+            trailEffect.transform.parent = null;
+            trailEffect.Stop();
+            Destroy(trailEffect.gameObject, 5f);
+        }
+    }
+
+    protected abstract int GetFinalDamge();
 }

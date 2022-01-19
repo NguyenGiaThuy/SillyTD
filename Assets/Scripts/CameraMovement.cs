@@ -1,4 +1,5 @@
 using UnityEngine;
+using Cinemachine;
 
 public class CameraMovement : MonoBehaviour
 {
@@ -6,72 +7,85 @@ public class CameraMovement : MonoBehaviour
     [SerializeField]
     private float panSpeed;
     [SerializeField]
-    private float panPadding;
-    [SerializeField]
     private float panMinX;
     [SerializeField]
     private float panMaxX;
     [SerializeField]
-    private float panMinZ;
+    private float panMinY;
     [SerializeField]
-    private float panMaxZ;
+    private float panMaxY;
 
-    [Header("Camera scrolling")]
+    [Header("Camera zooming")]
     [SerializeField]
-    private float scrollSpeed;
+    private float zoomSpeed;
     [SerializeField]
-    private float scrollMin;
+    private float zoomMin;
     [SerializeField]
-    private float scrollMax;
-
-    // Scrolling velocity
-    private Vector3 velocity;
-
-    // Track scrolling
-    private float newPositionY;
+    private float zoomMax;
 
     private Transform pivot;
     private float initialPivotY;
 
-    private void Start()
+    private CinemachineInputProvider inputProvider;
+
+    // Start is called before the first frame update
+    void Start()
     {
-        velocity = Vector3.zero;
-        newPositionY = transform.position.y;
+        inputProvider = GetComponent<CinemachineInputProvider>();
         pivot = GameObject.Find("CameraPivot").GetComponent<Transform>();
         initialPivotY = pivot.position.y;
     }
 
-    private void Update()
+    // Update is called once per frame
+    void Update()
     {
-        
-        if (Input.GetKey("w") || Input.mousePosition.y >= Screen.height - panPadding) 
-            transform.Translate(Vector3.forward * panSpeed * Time.deltaTime, Space.World);
+        float x = inputProvider.GetAxisValue(0);
+        float y = inputProvider.GetAxisValue(1);
+        float z = inputProvider.GetAxisValue(2);
 
-        if (Input.GetKey("s") || Input.mousePosition.y <= panPadding) 
-            transform.Translate(Vector3.back * panSpeed * Time.deltaTime, Space.World);
+        if (x != 0f || y != 0f) PanScreen(x, y);
+        if (z != 0f) ZoomScreen(z);
+    }
 
-        if (Input.GetKey("d") || Input.mousePosition.x >= Screen.width - panPadding) 
-            transform.Translate(Vector3.right * panSpeed * Time.deltaTime, Space.World);
+    public Vector3 PanDirection(float x, float y)
+    {
+        Vector3 direction = Vector3.zero;
 
-        if (Input.GetKey("a") || Input.mousePosition.x <= panPadding) 
-            transform.Translate(Vector3.left * panSpeed * Time.deltaTime, Space.World);
+        if(y >= Screen.height * 0.95f) direction += Vector3.forward;
+        if(y <= Screen.height * 0.05f) direction += Vector3.back;
+        if (x >= Screen.width * 0.95f) direction += Vector3.right;
+        if (x <= Screen.width * 0.05f) direction += Vector3.left;
 
-        // Clamp panning
-        Vector3 newPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        return direction;
+    }
+
+    public void PanScreen(float x, float y)
+    {
+        Vector3 direction = PanDirection(x, y);
+        Vector3 newPosition = Vector3.Lerp(transform.position, transform.position + direction, panSpeed * Time.deltaTime);
         newPosition.x = Mathf.Clamp(newPosition.x, panMinX, panMaxX);
-        newPosition.z = Mathf.Clamp(newPosition.z, panMinZ, panMaxZ);
+        newPosition.z = Mathf.Clamp(newPosition.z, panMinY, panMaxY);
+        transform.position = newPosition;
+    }
+
+    public Vector3 ZoomDirection(float z)
+    {
+        Vector3 direction = Vector3.zero;
+        direction += new Vector3(direction.x, z, direction.z);
+        direction.Normalize();
+        return direction;
+    }
+
+    public void ZoomScreen(float z)
+    {
+        Vector3 direction = ZoomDirection(z);
+        Vector3 newPosition = Vector3.Lerp(transform.position, transform.position + direction, zoomSpeed * Time.deltaTime);
+        newPosition.y = Mathf.Clamp(newPosition.y, zoomMin, zoomMax);
         transform.position = newPosition;
 
-        // Smooth scrolling
-        float scroll = Input.GetAxis("Mouse ScrollWheel") * scrollSpeed * 1000f * Time.deltaTime;
-        newPositionY -= scroll;
-        newPositionY = Mathf.Clamp(newPositionY, scrollMin, scrollMax);
-        newPosition = new Vector3(transform.position.x, newPositionY, transform.position.z);
-        transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref velocity, 0.5f);
-
-        // Rotate camera after scrolling
-        Vector3 direction = new Vector3(pivot.position.x, initialPivotY, pivot.position.z) - newPosition;
-        Quaternion lookRotation = Quaternion.LookRotation(direction);
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, scrollSpeed / 5f * Time.deltaTime);
+        // Rotate camera after zooming
+        Vector3 pivotDirection = new Vector3(pivot.position.x, initialPivotY, pivot.position.z) - transform.position;
+        Quaternion lookRotation = Quaternion.LookRotation(pivotDirection);
+        transform.rotation = Quaternion.Lerp(transform.rotation, lookRotation, zoomSpeed * Time.deltaTime);
     }
 }

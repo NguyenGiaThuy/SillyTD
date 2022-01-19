@@ -33,22 +33,24 @@ public abstract class AttackTurret : Turret
     [SerializeField]
     private GameObject partToRotatePrefab;
     [SerializeField]
-    protected GameObject firePointPrefab;
-    //[SerializeField]
-    //protected GameObject fireEffect;
+    protected GameObject[] firePointPrefabs;
+    [SerializeField]
+    protected GameObject[] fireEffectPrefabs;
     [SerializeField]
     protected GameObject projectilePrefab;
-
+    
     // Hidden fields
     protected Mob target;
     protected float fireCountdown;
     protected bool canAntiAir;
+    protected AudioSource audioSource;
 
     private void Start()
     {
         fireCountdown = data.fireCooldown - 1f;
         SetState(TurretState.Idling);
-        StartCoroutine(SearchTarget());        
+        StartCoroutine(SearchTarget());
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -155,11 +157,37 @@ public abstract class AttackTurret : Turret
         Vector3 direction = target.transform.position - transform.position;
         direction.y = 0f;
         Quaternion lookRotation = Quaternion.LookRotation(direction);
-        partToRotatePrefab.transform.rotation = Quaternion.LerpUnclamped(partToRotatePrefab.transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
+        //partToRotatePrefab.transform.rotation = Quaternion.LerpUnclamped(partToRotatePrefab.transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
+        partToRotatePrefab.transform.rotation = Quaternion.RotateTowards(partToRotatePrefab.transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
 
         // Done rotation
         if (Quaternion.Angle(partToRotatePrefab.transform.rotation, Quaternion.LookRotation(direction)) <= 10f) SetState(TurretState.Firing);
     }
 
-    protected abstract void Fire();
+    private void Fire()
+    {
+        if (target == null)
+        {
+            SetState(TurretState.Idling);
+            return;
+        }
+
+        // Fire if reloaded
+        if (fireCountdown > data.fireCooldown)
+        {
+            audioSource.Play();
+
+            foreach (GameObject firePointPrefab in firePointPrefabs)
+            {
+                foreach (GameObject fireEffectPrefab in fireEffectPrefabs) fireEffectPrefab.GetComponent<ParticleSystem>().Play();
+                Projectile projectile = Instantiate(projectilePrefab, firePointPrefab.transform.position, firePointPrefab.transform.rotation).GetComponent<Projectile>();
+                projectile.sourceTurret = this;
+                projectile.target = target;
+            }
+
+            fireCountdown = 0f;
+        }
+
+        SetState(TurretState.Rotating);
+    }
 }

@@ -19,26 +19,4 @@ public class MissileLauncher : AttackTurret
     {
         data = Resources.Load<AttackTurretData>("MissileLauncherData/MissileLauncherData" + level);
     }
-
-    protected override void Fire()
-    {
-        if (target == null)
-        {
-            SetState(TurretState.Idling);
-            return;
-        }
-
-        // Fire if reloaded
-        if (fireCountdown > data.fireCooldown)
-        {
-            //ParticleSystem particle = Instantiate(fireEffect, firePoint.transform.position, firePoint.transform.rotation, firePoint.transform).GetComponent<ParticleSystem>();
-            //Destroy(particle.gameObject, particle.main.duration);
-            Missile missile = Instantiate(projectilePrefab, firePointPrefab.transform.position, projectilePrefab.transform.rotation).GetComponent<Missile>();
-            missile.sourceTurret = this;
-            missile.target = target;
-            fireCountdown = 0f;
-        }
-
-        SetState(TurretState.Rotating);
-    }
 }
