@@ -25,19 +25,16 @@ public class CameraMovement : MonoBehaviour
 
     private Transform pivot;
     private float initialPivotY;
-
     private CinemachineInputProvider inputProvider;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         inputProvider = GetComponent<CinemachineInputProvider>();
         pivot = GameObject.Find("CameraPivot").GetComponent<Transform>();
         initialPivotY = pivot.position.y;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         float x = inputProvider.GetAxisValue(0);
         float y = inputProvider.GetAxisValue(1);

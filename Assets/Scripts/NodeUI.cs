@@ -3,8 +3,6 @@ using UnityEngine.UI;
 
 public class NodeUI : MonoBehaviour
 {
-    public static NodeUI nodeUI;
-
     [SerializeField]
     private GameObject canvas;
 
@@ -12,14 +10,12 @@ public class NodeUI : MonoBehaviour
     private Transform canvasTransform;
     private Node selectedNode;
     private GameObject panel;
-    private Button[] buttons;
 
     private void Awake()
     {
-        if (nodeUI != null) Destroy(gameObject);
-        else nodeUI = this;
         BuildManager.buildManager.Built += BuildManager_OnBuilt;
         BuildManager.buildManager.Demolished += BuildManager_OnDemolished;
+        BuildManager.buildManager.Upgraded += BuildManager_Upgraded;
     }
 
     private void Start()
@@ -48,7 +44,6 @@ public class NodeUI : MonoBehaviour
         }
 
         panel.gameObject.SetActive(true);
-        buttons = panel.GetComponentsInChildren<Button>();
         canvasTransform.position = panelPosition;
     }
 
@@ -62,7 +57,12 @@ public class NodeUI : MonoBehaviour
         HidePanel();
     }
 
-    private void BuildManager_OnDemolished(int demolishedTurretID)
+    private void BuildManager_OnDemolished(Vector3 demolishedTurretPosition)
+    {
+        HidePanel();
+    }
+
+    private void BuildManager_Upgraded(GameObject upgradedTurret)
     {
         HidePanel();
     }

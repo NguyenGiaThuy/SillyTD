@@ -18,7 +18,7 @@ public class WaveSpawner : MonoBehaviour
         Active
     }
 
-    public WaveSpawnerState State { get; private set; }
+    public WaveSpawnerState CurrentState { get; private set; }
     public int CurrentWaveIndex { get; set; }
 
     [Header("Game Specifications", order = 0)]
@@ -41,30 +41,24 @@ public class WaveSpawner : MonoBehaviour
 
     private void Awake()
     {
-        GameManager.gameManager.StateChanged += GameManager_StateChanged;
+        GameManager.gameManager.SubscribeToGameStateChanged(GameManager_StateChanged);
     }
 
     private void Start()
     {
-        Load(0);
+        CurrentWaveIndex = 0;
     }
 
     private void OnDestroy()
     {
-        GameManager.gameManager.StateChanged -= GameManager_StateChanged;
-    }
-
-    // Used for loading level
-    public void Load(int currentWaveIndex)
-    {
-        CurrentWaveIndex = currentWaveIndex;
+        GameManager.gameManager.UnsubscribeToGameStateChanged(GameManager_StateChanged);
     }
 
     public void SetState(WaveSpawnerState waveSpawnerState)
     {
-        if (State == waveSpawnerState) return;
+        if (CurrentState == waveSpawnerState) return;
 
-        State = waveSpawnerState;
+        CurrentState = waveSpawnerState;
         StateChanged?.Invoke(waveSpawnerState);
     }
 
@@ -113,9 +107,10 @@ public class WaveSpawner : MonoBehaviour
         }
     }
 
-    // Only called once at the beginning of the game
-    private void GameManager_StateChanged(GameManager.GameState gameState)
+    
+    private void GameManager_StateChanged(GameStateManager.GameState gameState)
     {
-        if (gameState == GameManager.GameState.Playing && State != WaveSpawnerState.Active) StartCoroutine(Spawn());
+        // Only called once at the beginning of the game
+        if (gameState == GameStateManager.GameState.Playing && CurrentState != WaveSpawnerState.Active) StartCoroutine(Spawn());
     }
 }

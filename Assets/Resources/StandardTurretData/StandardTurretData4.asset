@@ -9,8 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46dac925e860b3f4684de92bf5b4f1e0, type: 3}
-  m_Name: LevelData1
+  m_Script: {fileID: 11500000, guid: 6d15a7e22020e2e498c49ad00fbc7dcc, type: 3}
+  m_Name: StandardTurretData4
   m_EditorClassIdentifier: 
-  initialCredits: 1000
-  initialLives: 30
+  damage: 40
+  explosionRadius: 0
+  fireCooldown: 0.5
+  minRange: 0
+  maxRange: 22

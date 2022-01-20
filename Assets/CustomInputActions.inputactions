@@ -54,9 +54,9 @@
             "id": "313590e1-99c3-4289-96f7-7b9945bb8b84",
             "actions": [
                 {
-                    "name": "CancelNodeSelection",
+                    "name": "PauseGame",
                     "type": "Button",
-                    "id": "350325fc-db28-4d78-9b05-2ae91d3121c9",
+                    "id": "4e66f5bf-1e82-477d-a945-9ea5f28e306b",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -66,7 +66,35 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "c3eee406-4eaa-4286-bc62-d28fa754a581",
+                    "id": "8196dc4b-e4a7-4a85-9789-509def39318b",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PauseGame",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "NodeUI",
+            "id": "1fb9f95f-61f1-49fb-be07-f832c5653677",
+            "actions": [
+                {
+                    "name": "CancelNodeSelection",
+                    "type": "Button",
+                    "id": "569a098b-afd1-4227-a9e6-a8619ad4f0e3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "8ece36f5-12dc-4571-85c3-887f100350f6",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",

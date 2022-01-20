@@ -227,7 +227,7 @@ GameObject:
   - component: {fileID: 353995028}
   - component: {fileID: 353995025}
   - component: {fileID: 353995027}
-  - component: {fileID: 353995026}
+  - component: {fileID: 353995029}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -247,67 +247,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf75b62700db0d34584fed406034a8b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <State>k__BackingField: 0
   playerStats:
-    credits: 50000
+    levelIndex: 0
+    credits: 200
     lives: 5
     researchPoints: 0
-  levelStats: {fileID: 0}
---- !u!114 &353995026
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 353995024}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: d8f6dcf1aea41e547ad5aad9d965bf86,
-    type: 3}
-  m_NotificationBehavior: 2
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: f8208d3c-dc61-412a-bb8f-e17316c92c34
-    m_ActionName: Mouse/Pan[/Mouse/position]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 0d11fc90-fa52-4157-8a44-de81983bb116
-    m_ActionName: Mouse/Zoom[/Mouse/scroll/y]
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: NodeUI, Assembly-CSharp
-        m_MethodName: HidePanel
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 350325fc-db28-4d78-9b05-2ae91d3121c9
-    m_ActionName: NodeUI/CancelNodeSelection[/Keyboard/escape,/Mouse/rightButton]
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Gameplay
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
+  sceneLoadingTime: 1
 --- !u!114 &353995027
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -336,6 +281,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &353995029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 353995024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a4cfe5fc112f9c46bd3bc21fae0234a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &656149455
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -343,10 +300,20 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 8738155867873631740, guid: 40a8fc991b30e1c4cb13695f96c69b0b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 16.188477
+      objectReference: {fileID: 0}
     - target: {fileID: 8738155867873631741, guid: 40a8fc991b30e1c4cb13695f96c69b0b,
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8738155868176886564, guid: 40a8fc991b30e1c4cb13695f96c69b0b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8738155868176886565, guid: 40a8fc991b30e1c4cb13695f96c69b0b,
         type: 3}
@@ -358,6 +325,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -14.000061
       objectReference: {fileID: 0}
+    - target: {fileID: 8738155868249668303, guid: 40a8fc991b30e1c4cb13695f96c69b0b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8738155868249668304, guid: 40a8fc991b30e1c4cb13695f96c69b0b,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -367,6 +339,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -12.799957
+      objectReference: {fileID: 0}
+    - target: {fileID: 8738155868432908807, guid: 40a8fc991b30e1c4cb13695f96c69b0b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8738155868432908808, guid: 40a8fc991b30e1c4cb13695f96c69b0b,
         type: 3}
@@ -402,6 +379,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -13.579956
+      objectReference: {fileID: 0}
+    - target: {fileID: 8738155868589733070, guid: 40a8fc991b30e1c4cb13695f96c69b0b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8738155868589733070, guid: 40a8fc991b30e1c4cb13695f96c69b0b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8738155868589733070, guid: 40a8fc991b30e1c4cb13695f96c69b0b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8738155868589733071, guid: 40a8fc991b30e1c4cb13695f96c69b0b,
         type: 3}
@@ -580,7 +572,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8738155868709639918, guid: 40a8fc991b30e1c4cb13695f96c69b0b, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 40a8fc991b30e1c4cb13695f96c69b0b, type: 3}
 --- !u!1 &1675913884
 GameObject:
@@ -594,7 +587,7 @@ GameObject:
   - component: {fileID: 1675913886}
   - component: {fileID: 1675913885}
   m_Layer: 0
-  m_Name: EventSystem
+  m_Name: UIEventSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -679,7 +672,6 @@ GameObject:
   - component: {fileID: 1846651145}
   - component: {fileID: 1846651144}
   - component: {fileID: 1846651143}
-  - component: {fileID: 1846651146}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -752,15 +744,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1846651146
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1846651142}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b76e9a24dd0e4e4fbf245f02a9de8b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

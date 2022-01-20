@@ -1,130 +1,126 @@
 using UnityEngine;
+using System.Collections;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager gameManager;
 
-    public delegate void OnStateChangedHandler(GameState gameState);
-    public event OnStateChangedHandler StateChanged;
-
-    public enum GameState
-    {
-        Null,
-        PausedFromPreparing,
-        PausedFromPlaying,
-        Preparing,
-        Playing,
-        Victorious,
-        Lost
-    }
-
-    [field: SerializeField]
-    public GameState State { get; private set; }
-
-    public delegate void OnLostHandler();
-    public event OnLostHandler Lost;
-    public delegate void OnWonHandler();
-    public event OnWonHandler Won;
-
-    [field: SerializeField]
+    public GameStateManager.GameState CurrentState { get { return gameStateManager.CurrentState; } }
     public PlayerStats playerStats;
-
     [SerializeField]
-    private LevelData levelStats;
+    private float sceneLoadingTime;
 
+    // Hidden fields
+    private bool isPausedFromPlaying;
+    private bool pauseEnabled;
+    private GameStateManager gameStateManager;
+    private GameObject loadingCanvas;
     private WaveSpawner[] waveSpawners;
+    private GameStateManager.GameState savedState;
+    private LevelData levelStats;
 
     private void Awake()
     {
         if (gameManager != null) Destroy(gameObject);
-        else gameManager = this;
-
-        StateChanged += GameManager_OnStateChanged;
-    }
-
-    private void OnDestroy()
-    {
-        StateChanged -= GameManager_OnStateChanged;
-        foreach (WaveSpawner waveSpawner in waveSpawners) waveSpawner.StateChanged -= WaveSpawner_StateChanged;
-    }
-
-    private void Start()
-    {
-        waveSpawners = FindObjectsOfType<WaveSpawner>();
-        foreach(WaveSpawner waveSpawner in waveSpawners) waveSpawner.StateChanged += WaveSpawner_StateChanged;
-        SetState(GameState.Playing);
-    }
-
-    private void Update()
-    {
-        switch(State)
+        else
         {
-            case GameState.PausedFromPreparing:
-                //if (Input.GetKeyDown(KeyCode.Escape)) SetState(GameState.Preparing);
-                break;
-            case GameState.PausedFromPlaying:
-                //if (Input.GetKeyDown(KeyCode.Escape)) SetState(GameState.Playing);
-                break;
-            case GameState.Preparing:
-                //if (Input.GetKeyDown(KeyCode.Escape)) SetState(GameState.PausedFromPreparing);
-                break;
-            case GameState.Playing:
-                //if (Input.GetKeyDown(KeyCode.Escape)) SetState(GameState.PausedFromPlaying);
-                break;
-            case GameState.Victorious:
-                // Logics for victory
-                break;
-            case GameState.Lost:
-                // Logics for losing
-                break;
+            gameManager = this;
+            DontDestroyOnLoad(gameObject);
         }
+
+        SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+        gameStateManager = new GameStateManager();
+        savedState = CurrentState;
+        gameStateManager.StateChanged += GameStateManager_StateChanged;
+        pauseEnabled = false;
     }
 
-    public void SetState(GameState newGameState)
+    public void SetNewState(GameStateManager.GameState newGameState)
     {
-        if (newGameState == State) return;
+        gameStateManager.SetNewState(newGameState);
+    }
 
-        State = newGameState;
-        StateChanged?.Invoke(newGameState);
+    public void SubscribeToGameStateChanged(GameStateManager.OnStateChangedHandler handler)
+    {
+        gameStateManager.StateChanged += handler;
+    }
+
+    public void UnsubscribeToGameStateChanged(GameStateManager.OnStateChangedHandler handler)
+    {
+        gameStateManager.StateChanged -= handler;
     }
 
     public void NewGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        levelStats = Resources.Load<LevelData>("LevelData1");
-        playerStats = new PlayerStats(levelStats.initialCredits, levelStats.initialLives, 0);
-        SetState(GameState.Preparing);
+        NewLevel();
+        playerStats = new PlayerStats(1);
+        // Save player stats here
+        // Save state here
     }
 
     public void NewLevel()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        levelStats = Resources.Load<LevelData>("LevelStats" + SceneManager.GetActiveScene().buildIndex + 1);
-        playerStats.UpdateStats(levelStats.initialCredits, levelStats.initialLives);
-        SetState(GameState.Preparing);
     }
 
-    public void PlayGame()
+    private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
     {
-        // Logic here
-        SetState(GameState.Playing);
+        // Back to main menu
+        if (arg0.buildIndex == 0)
+        {
+            SetNewState(GameStateManager.GameState.Null);
+            return;
+        }
+
+        SetNewState(GameStateManager.GameState.Initializing);
     }
 
-    public void LoadGame()
+    private void InitializeLevel()
     {
-        // Load game here
-        SetState(GameState.Playing);
+        levelStats = Resources.Load<LevelData>("LevelData" + SceneManager.GetActiveScene().buildIndex);
+
+        // Subscribe to WaveSpawner event
+        waveSpawners = FindObjectsOfType<WaveSpawner>();
+        foreach (WaveSpawner waveSpawner in waveSpawners) waveSpawner.StateChanged += WaveSpawner_StateChanged;
+
+        // Start loading screen with saved state
+        StartCoroutine(SetNewStateAfter(GameStateManager.GameState.Playing, sceneLoadingTime));
+
+        // Logics:
+        // - Load player stats from file
+        // - If saved state = {preparing, victorious} then overwrite player stats with level Stats and return
+        // - If saved state = {playing, lost} then load all saved objects
+    }
+    
+    // Loading screen
+    IEnumerator SetNewStateAfter(GameStateManager.GameState newGameState, float second)
+    {
+        loadingCanvas = GameObject.Find("LoadingCanvas");
+        loadingCanvas.SetActive(true);
+        yield return new WaitForSeconds(second);
+        SetNewState(newGameState);
+        loadingCanvas.SetActive(false);
+    }
+
+    public void ContinueGame()
+    {
+        // Logics:
+        // - Load saved state
+        // - Load scene
     }
 
     public void AutoSave()
     {
-        // Save game here
-        SetState(GameState.Playing);
+        // Save all game objects and player stats
+        // Save state
     }
 
-    private void PauseGame()
+    // Only called while playing
+    public void PauseGame()
     {
+        if (!pauseEnabled) return;
+
         Turret[] turrets = FindObjectsOfType<Turret>();
         Projectile[] projectiles = FindObjectsOfType<Projectile>();
         Mob[] mobs = FindObjectsOfType<Mob>();
@@ -136,9 +132,12 @@ public class GameManager : MonoBehaviour
         foreach (Node node in nodes) node.GetComponent<BoxCollider>().enabled = false;
 
         Time.timeScale = 0f;
+
+        SetNewState(GameStateManager.GameState.Pausing);
     }
 
-    private void UnpauseGame()
+    // Only called while playing
+    public void UnpauseGame()
     {
         Turret[] turrets = FindObjectsOfType<Turret>();
         Projectile[] projectiles = FindObjectsOfType<Projectile>();
@@ -151,30 +150,36 @@ public class GameManager : MonoBehaviour
         foreach (Node mob in nodes) mob.GetComponent<BoxCollider>().enabled = true;
 
         Time.timeScale = 1f;
+
+        if(isPausedFromPlaying) SetNewState(GameStateManager.GameState.Playing);
+        else SetNewState(GameStateManager.GameState.Preparing);
     }
 
-    // React to each game state
-    private void GameManager_OnStateChanged(GameState gameState)
+    
+
+    private void GameStateManager_StateChanged(GameStateManager.GameState gameState)
     {
         switch(gameState)
         {
-            case GameState.PausedFromPreparing:
-                PauseGame();
+            case GameStateManager.GameState.Null:
+                pauseEnabled = false;
                 break;
-            case GameState.PausedFromPlaying:
-                PauseGame();
+            case GameStateManager.GameState.Initializing:
+                InitializeLevel();
                 break;
-            case GameState.Preparing:
-                UnpauseGame();
+            case GameStateManager.GameState.Preparing:
+                pauseEnabled = true;
+                isPausedFromPlaying = false;
                 break;
-            case GameState.Playing:
-                UnpauseGame();
+            case GameStateManager.GameState.Playing:
+                isPausedFromPlaying = true;
                 break;
-            case GameState.Victorious:
-                // Logics for victory
+            case GameStateManager.GameState.Victorious:
+                Debug.Log("Victorious");
                 break;
-            case GameState.Lost:
-                // Logics for losing
+            case GameStateManager.GameState.Lost:
+                GameManager.gameManager.playerStats.lives = 0;
+                Debug.Log("Lost");
                 break;
         }
     }
@@ -182,6 +187,6 @@ public class GameManager : MonoBehaviour
     // Check if player is victorious
     private void WaveSpawner_StateChanged(WaveSpawner.WaveSpawnerState waveSpawnerState)
     {
-        if (waveSpawnerState == WaveSpawner.WaveSpawnerState.Inactive && WaveSpawner.Counter == 0) SetState(GameState.Victorious);
+        if (waveSpawnerState == WaveSpawner.WaveSpawnerState.Inactive && WaveSpawner.Counter == 0) SetNewState(GameStateManager.GameState.Victorious);
     }
 }

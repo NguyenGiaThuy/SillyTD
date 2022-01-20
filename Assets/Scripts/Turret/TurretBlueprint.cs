@@ -8,7 +8,8 @@ public class TurretBlueprint
     public class Model
     {
         public int id;
-        public int cost;
+        public int buildCost;
+        public int[] upgradeCosts;
         public GameObject turretPrefab;
     }
 

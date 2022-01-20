@@ -12,11 +12,13 @@ public class Node : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IP
     // Hidden fields
     private Color initialColor;
     private Renderer nodeRenderer;
+    private NodeUI nodeUI;
 
     private void Start()
     {
         nodeRenderer = GetComponent<Renderer>();
         initialColor = nodeRenderer.material.color;
+        nodeUI = FindObjectOfType<NodeUI>();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -29,7 +31,7 @@ public class Node : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IP
         if (eventData.button == PointerEventData.InputButton.Left)
         {
             BuildManager.buildManager.selectedNode = this;
-            NodeUI.nodeUI.ShowPanel(this);
+            nodeUI.ShowPanel(this);
         }
     }
 
