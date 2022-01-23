@@ -3661,15 +3661,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00008acd4592b334cb07e3c5077bd20d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeBetweenWaves: 1
+  timeBetweenWaves: 10
   timeBetweenGroups: 1
   timeBetweenUnits: 1
-  unitsPerWave: 100
+  unitsPerWave: 10
   unitsPerGroup: 1
   mobPrefabs:
   - {fileID: 8610516320750266020, guid: 46e8c2c87ea3df84b98a5e9f2481a333, type: 3}
+  - {fileID: 8610516320750266020, guid: 46e8c2c87ea3df84b98a5e9f2481a333, type: 3}
   wayPoints: {fileID: 634804320}
-  autoSaveAtWaveIndex: 0
+  autoSaveModifier: 1
 --- !u!65 &268806464
 BoxCollider:
   m_ObjectHideFlags: 0

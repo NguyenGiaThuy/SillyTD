@@ -71,6 +71,5 @@ public class Shop : MonoBehaviour
     {
         if (gameState == GameStateManager.GameState.Preparing) sellMultiplier = 1f;
         else sellMultiplier = 0.5f;
-        Debug.Log(gameState);
     }
 }

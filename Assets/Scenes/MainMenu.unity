@@ -276,13 +276,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf75b62700db0d34584fed406034a8b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  savedState: 0
+  previousGameState: 0
   playerStats:
     levelIndex: 0
-    credits: 200
-    lives: 5
+    credits: 1000
+    lives: 1000
     researchPoints: 0
   levelIndex: 0
-  previousGameState: 0
   sceneLoadingTime: 2
   turretBlueprint: {fileID: 11400000, guid: b94fbc1a8de31ad4bae0e1ceec2ac2ca, type: 2}
 --- !u!4 &353995028

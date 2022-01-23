@@ -39,7 +39,7 @@ public class WaveSpawner : MonoBehaviour
     [SerializeField]
     private WayPoints wayPoints;
     [SerializeField]
-    private int autoSaveAtWaveIndex;
+    private int autoSaveModifier;
 
     private void Awake()
     {
@@ -91,11 +91,11 @@ public class WaveSpawner : MonoBehaviour
             // Wait for the last mob to disappear
              yield return new WaitWhile(() => { return Mob.Counter != 0; });
 
-            // Auto-save
-            if (CurrentWaveIndex == autoSaveAtWaveIndex) GameManager.Instance.SetNewState(GameStateManager.GameState.Saving);
+            //Auto-save
+            CurrentWaveIndex++;
+            if (CurrentWaveIndex % autoSaveModifier == 0) GameManager.Instance.SetNewState(GameStateManager.GameState.Saving);
 
             // End coroutine if the last wave ends
-            CurrentWaveIndex++;
             if (CurrentWaveIndex == mobPrefabs.Length) 
             {
                 Counter--;

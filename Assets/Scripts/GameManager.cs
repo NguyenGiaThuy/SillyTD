@@ -121,6 +121,10 @@ public class GameManager : MonoBehaviour
             case GameStateManager.GameState.Pausing:
                 PauseGame();
                 break;
+            case GameStateManager.GameState.Victorious:
+                break;
+            case GameStateManager.GameState.Lost:
+                break;
         }
     }
     //########## State management methods ENDS ##########
@@ -253,7 +257,7 @@ public class GameManager : MonoBehaviour
     }
     private void WaveSpawner_StateChanged(WaveSpawner.WaveSpawnerState waveSpawnerState)
     {
-
+        if (waveSpawnerState == WaveSpawner.WaveSpawnerState.Inactive && WaveSpawner.Counter == 0) SetNewState(GameStateManager.GameState.Victorious);
     }
     //########## Utility methods ENDS ##########
 
