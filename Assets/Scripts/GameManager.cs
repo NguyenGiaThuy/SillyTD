@@ -68,6 +68,8 @@ public class GameManager : MonoBehaviour
         SetNewState(newGameState);
 
         loadingCanvas.SetActive(false);
+
+        Debug.Log(newGameState);
     }
     private void GameStateManager_StateChanged(GameStateManager.GameState gameState)
     {
@@ -77,28 +79,29 @@ public class GameManager : MonoBehaviour
                 break;
             case GameStateManager.GameState.New:
                 LoadLevel(1);
-                StartCoroutine(SetNewStateAfter(GameStateManager.GameState.Initializing, sceneLoadingTime, true));
+                SetNewState(GameStateManager.GameState.Initializing);
                 break;
             case GameStateManager.GameState.Resuming:
                 gameData = LoadData();
                 LoadGameManger(gameData.gameManagerData);
                 LoadLevel(levelIndex);
-                StartCoroutine(SetNewStateAfter(GameStateManager.GameState.Initializing, sceneLoadingTime, true));
+                SetNewState(GameStateManager.GameState.Initializing);
                 break;
             case GameStateManager.GameState.Saving:
                 SaveData();
                 SetNewState(previousGameState);
                 break;
             case GameStateManager.GameState.Initializing:
-                InitializeGameManager();
                 switch (previousGameState)
                 {
                     case GameStateManager.GameState.New:
-                        SetNewState(GameStateManager.GameState.Preparing);
+                        StartCoroutine(SetNewStateAfter(GameStateManager.GameState.Preparing, sceneLoadingTime, true));
+                        InitializeGameManager();
                         break;
                     case GameStateManager.GameState.Resuming:
+                        StartCoroutine(SetNewStateAfter(savedState, sceneLoadingTime, true));
+                        InitializeGameManager();
                         InitializeLevel();
-                        SetNewState(savedState);
                         break;
                 }
                 break;
