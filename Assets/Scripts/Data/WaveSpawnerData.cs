@@ -1,7 +1,7 @@
 using System;
 
 [Serializable]
-public class WaveSpawnerStats
+public class WaveSpawnerData
 {
     public int currentWaveIndex;
 }

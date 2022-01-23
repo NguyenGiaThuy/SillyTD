@@ -7,11 +7,14 @@ public class GameStateManager
 
     public enum GameState
     {
-        Null,
-        Pausing,
+        MainMenu,
+        New,
+        Resuming,
+        Saving,
         Initializing,
         Preparing,
         Playing,
+        Pausing,
         Victorious,
         Lost
     }
@@ -25,7 +28,7 @@ public class GameStateManager
 
     public GameStateManager()
     {
-        CurrentState = GameState.Null;
+        CurrentState = GameState.MainMenu;
     }
 
     public void SetNewState(GameState newGameState)

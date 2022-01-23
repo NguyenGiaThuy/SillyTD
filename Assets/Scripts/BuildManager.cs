@@ -2,13 +2,11 @@ using UnityEngine;
 
 public class BuildManager : MonoBehaviour
 {
-    public static BuildManager buildManager;
-
-    public delegate void OnBuiltHandler(GameObject builtTurret);
+    public delegate void OnBuiltHandler(Node builtNode);
     public event OnBuiltHandler Built;
-    public delegate void OnDemolishedHandler(Vector3 demolishedTurretPosition);
+    public delegate void OnDemolishedHandler(Node demolishedNode);
     public event OnDemolishedHandler Demolished;
-    public delegate void OnUpgradedHandler(GameObject upgradedTurret);
+    public delegate void OnUpgradedHandler(Node upgradedNode);
     public event OnUpgradedHandler Upgraded;
 
     public Turret CurrentTurret { get { return selectedNode.turret.GetComponent<Turret>(); } }
@@ -17,34 +15,22 @@ public class BuildManager : MonoBehaviour
     [SerializeField]
     private Vector3 buildOffsets;
 
-    private void Awake()
-    {
-        if (buildManager != null) Destroy(gameObject);
-        else
-        {
-            buildManager = this;
-            DontDestroyOnLoad(gameObject);
-        }
-    }
-
     public void BuildTurret(TurretBlueprint.Model turretToBuild)
     {
-        selectedNode.turret = Instantiate(turretToBuild.turretPrefab, selectedNode.transform.position + buildOffsets, turretToBuild.turretPrefab.transform.rotation);
-        selectedNode.turret.transform.parent = selectedNode.transform;
-        Built?.Invoke(selectedNode.turret);
+        GameObject turret = Instantiate(turretToBuild.turretPrefab, selectedNode.transform.position + buildOffsets, turretToBuild.turretPrefab.transform.rotation);
+        selectedNode.SetTurret(turret.GetComponent<Turret>());
+        Built?.Invoke(selectedNode);
     }
 
     public void DemolishTurret()
     {
-        Vector3 turretToDemolishPosition = selectedNode.turret.transform.position;
-        Destroy(selectedNode.turret);
-        Demolished?.Invoke(turretToDemolishPosition);
+        Destroy(selectedNode.turret.gameObject);
+        Demolished?.Invoke(selectedNode);
     }
 
     public void UpgradeTurret()
     {
-        Turret turretToUpgrade = selectedNode.turret.GetComponent<Turret>();
-        turretToUpgrade.IncreaseLevel();
-        Upgraded?.Invoke(selectedNode.turret);
+        selectedNode.turret.IncreaseLevel();
+        Upgraded?.Invoke(selectedNode);
     }
 }

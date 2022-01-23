@@ -8,36 +8,38 @@ public class Shop : MonoBehaviour
 
     // Hidden fields
     private float sellMultiplier;
+    BuildManager buildManager;
 
     private void Awake() 
     {
-        GameManager.gameManager.SubscribeToGameStateChanged(GameManager_OnStateChanged);
+        buildManager = FindObjectOfType<BuildManager>();
+        GameManager.Instance.SubscribeToGameStateChanged(GameManager_OnStateChanged);
     }
 
     private void OnDestroy()
     {
-        GameManager.gameManager.UnsubscribeToGameStateChanged(GameManager_OnStateChanged);
+        GameManager.Instance.UnsubscribeToGameStateChanged(GameManager_OnStateChanged);
     }
 
     public void PurchaseTurret(int turretID) 
     {
         TurretBlueprint.Model model = turretBlueprint.models[turretID];
 
-        if (GameManager.gameManager.playerStats.credits < model.buildCost)
+        if (GameManager.Instance.playerStats.credits < model.buildCost)
         {
             Debug.Log("Not enough credits to build!");
             return;
         }
 
-        GameManager.gameManager.playerStats.credits -= model.buildCost;
-        BuildManager.buildManager.BuildTurret(model);
+        GameManager.Instance.playerStats.credits -= model.buildCost;
+        buildManager.BuildTurret(model);
 
     }
 
     public void UpgradeTurret()
     {
-        TurretBlueprint.Model model = turretBlueprint.models[BuildManager.buildManager.CurrentTurret.ID];
-        int nextLevel = BuildManager.buildManager.CurrentTurret.level;
+        TurretBlueprint.Model model = turretBlueprint.models[buildManager.CurrentTurret.ID];
+        int nextLevel = buildManager.CurrentTurret.level;
 
         if(nextLevel >= model.upgradeCosts.Length)
         {
@@ -45,29 +47,30 @@ public class Shop : MonoBehaviour
             return;
         }
 
-        if (GameManager.gameManager.playerStats.credits < model.upgradeCosts[nextLevel])
+        if (GameManager.Instance.playerStats.credits < model.upgradeCosts[nextLevel])
         {
             Debug.Log("Not enough credits to upgrade!");
             return;
         }
 
-        GameManager.gameManager.playerStats.credits -= model.upgradeCosts[nextLevel];
-        BuildManager.buildManager.UpgradeTurret();
+        GameManager.Instance.playerStats.credits -= model.upgradeCosts[nextLevel];
+        buildManager.UpgradeTurret();
     }
 
     public void SellTurret()
     {
-        TurretBlueprint.Model model = turretBlueprint.models[BuildManager.buildManager.CurrentTurret.ID];
-        int currentLevel = BuildManager.buildManager.CurrentTurret.level - 1;
+        TurretBlueprint.Model model = turretBlueprint.models[buildManager.CurrentTurret.ID];
+        int currentLevel = buildManager.CurrentTurret.level - 1;
         int totalUpgradeCost = 0;
         for (int i = 1; i <= currentLevel; i++) totalUpgradeCost += model.upgradeCosts[i];
-        GameManager.gameManager.playerStats.credits += Mathf.RoundToInt(sellMultiplier * (model.buildCost + totalUpgradeCost));
-        BuildManager.buildManager.DemolishTurret();
+        GameManager.Instance.playerStats.credits += Mathf.RoundToInt(sellMultiplier * (model.buildCost + totalUpgradeCost));
+        buildManager.DemolishTurret();
     }
 
     private void GameManager_OnStateChanged(GameStateManager.GameState gameState)
     {
         if (gameState == GameStateManager.GameState.Preparing) sellMultiplier = 1f;
         else sellMultiplier = 0.5f;
+        Debug.Log(gameState);
     }
 }

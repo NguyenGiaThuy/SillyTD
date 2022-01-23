@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
 
-[Serializable]
-public class TurretBlueprint
+[CreateAssetMenu]
+public class TurretBlueprint : ScriptableObject
 {
     [Serializable]
     public class Model

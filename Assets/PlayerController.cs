@@ -8,22 +8,22 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         inputActions = new CustomInputActions();
-        GameManager.gameManager.SubscribeToGameStateChanged(GameStateManager_OnStateChanged);
+        GameManager.Instance.SubscribeToGameStateChanged(GameStateManager_OnStateChanged);
         inputActions.Gameplay.PauseGame.performed += PauseGame_performed;
         inputActions.NodeUI.CancelNodeSelection.performed += CancelNodeSelection_performed;
     }
 
     private void CancelNodeSelection_performed(InputAction.CallbackContext obj)
     {
-        if (GameManager.gameManager.CurrentState == GameStateManager.GameState.Preparing ||
-            GameManager.gameManager.CurrentState == GameStateManager.GameState.Playing)
+        if (GameManager.Instance.CurrentState == GameStateManager.GameState.Preparing ||
+            GameManager.Instance.CurrentState == GameStateManager.GameState.Playing)
             FindObjectOfType<NodeUI>().HidePanel();
     }
 
     private void PauseGame_performed(InputAction.CallbackContext obj)
     {
-        if (GameManager.gameManager.CurrentState != GameStateManager.GameState.Pausing) GameManager.gameManager.PauseGame();
-        else GameManager.gameManager.UnpauseGame();
+        if (GameManager.Instance.CurrentState != GameStateManager.GameState.Pausing) GameManager.Instance.SetNewState(GameStateManager.GameState.Pausing);
+        else GameManager.Instance.SetNewState(GameStateManager.GameState.Playing);
     }
 
     private void GameStateManager_OnStateChanged(GameStateManager.GameState gameState)
@@ -35,6 +35,7 @@ public class PlayerController : MonoBehaviour
                 break;
             case GameStateManager.GameState.Pausing:
                 inputActions.Enable();
+                inputActions.NodeUI.CancelNodeSelection.Disable();
                 break;
             case GameStateManager.GameState.Preparing:
                 inputActions.Enable();
@@ -47,7 +48,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameManager.gameManager.UnsubscribeToGameStateChanged(GameStateManager_OnStateChanged);
+        GameManager.Instance.UnsubscribeToGameStateChanged(GameStateManager_OnStateChanged);
     }
 
 }

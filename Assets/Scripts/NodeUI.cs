@@ -10,12 +10,14 @@ public class NodeUI : MonoBehaviour
     private Transform canvasTransform;
     private Node selectedNode;
     private GameObject panel;
+    private BuildManager buildManager;
 
     private void Awake()
     {
-        BuildManager.buildManager.Built += BuildManager_OnBuilt;
-        BuildManager.buildManager.Demolished += BuildManager_OnDemolished;
-        BuildManager.buildManager.Upgraded += BuildManager_Upgraded;
+        buildManager = FindObjectOfType<BuildManager>();
+        buildManager.Built += BuildManager_OnBuilt;
+        buildManager.Demolished += BuildManager_OnDemolished;
+        buildManager.Upgraded += BuildManager_Upgraded;
     }
 
     private void Start()
@@ -25,8 +27,8 @@ public class NodeUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        BuildManager.buildManager.Built -= BuildManager_OnBuilt;
-        BuildManager.buildManager.Demolished -= BuildManager_OnDemolished;
+        buildManager.Built -= BuildManager_OnBuilt;
+        buildManager.Demolished -= BuildManager_OnDemolished;
     }
 
     public void ShowPanel(Node nodeToSelect)
@@ -52,17 +54,17 @@ public class NodeUI : MonoBehaviour
         if(panel != null) panel.gameObject.SetActive(false);
     }
 
-    private void BuildManager_OnBuilt(GameObject builtTurret)
+    private void BuildManager_OnBuilt(Node builtNode)
     {
         HidePanel();
     }
 
-    private void BuildManager_OnDemolished(Vector3 demolishedTurretPosition)
+    private void BuildManager_OnDemolished(Node demolishedNode)
     {
         HidePanel();
     }
 
-    private void BuildManager_Upgraded(GameObject upgradedTurret)
+    private void BuildManager_Upgraded(Node upgradedNode)
     {
         HidePanel();
     }

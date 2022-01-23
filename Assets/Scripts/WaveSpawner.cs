@@ -8,7 +8,7 @@ public class WaveSpawner : MonoBehaviour
     // Track current countdown of all spawners (shared between spawners)
     static public int CountDown { get; set; }
 
-    public delegate void OnStateChangedHandler(WaveSpawnerState gameState);
+    public delegate void OnStateChangedHandler(WaveSpawnerState waveSpawnerState);
     public event OnStateChangedHandler StateChanged;
 
     public enum WaveSpawnerState
@@ -38,10 +38,12 @@ public class WaveSpawner : MonoBehaviour
     private GameObject[] mobPrefabs;
     [SerializeField]
     private WayPoints wayPoints;
+    [SerializeField]
+    private int autoSaveAtWaveIndex;
 
     private void Awake()
     {
-        GameManager.gameManager.SubscribeToGameStateChanged(GameManager_StateChanged);
+        GameManager.Instance.SubscribeToGameStateChanged(GameManager_StateChanged);
     }
 
     private void Start()
@@ -51,22 +53,22 @@ public class WaveSpawner : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameManager.gameManager.UnsubscribeToGameStateChanged(GameManager_StateChanged);
+        GameManager.Instance.UnsubscribeToGameStateChanged(GameManager_StateChanged);
     }
 
-    public void SetState(WaveSpawnerState waveSpawnerState)
+    public void SetNewState(WaveSpawnerState newWaveSpawnerState)
     {
-        if (CurrentState == waveSpawnerState) return;
+        if (CurrentState == newWaveSpawnerState) return;
 
-        CurrentState = waveSpawnerState;
-        StateChanged?.Invoke(waveSpawnerState);
+        CurrentState = newWaveSpawnerState;
+        StateChanged?.Invoke(newWaveSpawnerState);
     }
 
     private IEnumerator Spawn()
     {
         Counter++;
         CountDown = Mathf.RoundToInt(timeBetweenWaves);
-        SetState(WaveSpawnerState.Active);
+        SetNewState(WaveSpawnerState.Active);
 
         // Begin spawning
         while (CurrentWaveIndex < mobPrefabs.Length)
@@ -89,12 +91,15 @@ public class WaveSpawner : MonoBehaviour
             // Wait for the last mob to disappear
              yield return new WaitWhile(() => { return Mob.Counter != 0; });
 
+            // Auto-save
+            if (CurrentWaveIndex == autoSaveAtWaveIndex) GameManager.Instance.SetNewState(GameStateManager.GameState.Saving);
+
             // End coroutine if the last wave ends
             CurrentWaveIndex++;
             if (CurrentWaveIndex == mobPrefabs.Length) 
             {
                 Counter--;
-                SetState(WaveSpawnerState.Inactive);
+                SetNewState(WaveSpawnerState.Inactive);
                 yield break; 
             }
 

@@ -6,7 +6,7 @@ public class MissileLauncher : AttackTurret
     {
         ID = 1;
         canAntiAir = true;
-        data = Resources.Load<AttackTurretData>("MissileLauncherData/MissileLauncherData" + level);
+        stats = Resources.Load<AttackTurretStats>("MissileLauncherData/MissileLauncherData" + level);
         LevelIncreased += MissileLauncher_LevelIncreased;
     }
 
@@ -17,6 +17,6 @@ public class MissileLauncher : AttackTurret
 
     private void MissileLauncher_LevelIncreased()
     {
-        data = Resources.Load<AttackTurretData>("MissileLauncherData/MissileLauncherData" + level);
+        stats = Resources.Load<AttackTurretStats>("MissileLauncherData/MissileLauncherData" + level);
     }
 }
