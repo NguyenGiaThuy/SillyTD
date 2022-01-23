@@ -4,70 +4,72 @@ using UnityEngine;
 
 public class Shop : MonoBehaviour
 {
-    public static Shop turretShop;
-
     public TurretBlueprint turretBlueprint;
 
     // Hidden fields
     private float sellMultiplier;
+    BuildManager buildManager;
 
     private void Awake() 
     {
-        if (turretShop != null) Destroy(gameObject);
-        else turretShop = this;
-
-        BuildManager.buildManager.Built += BuilManager_OnBuilt;
-        BuildManager.buildManager.Demolished += BuildManager_OnDemolished;
-        GameManager.gameManager.StateChanged += GameManager_OnStateChanged;
+        buildManager = FindObjectOfType<BuildManager>();
+        GameManager.Instance.SubscribeToGameStateChanged(GameManager_OnStateChanged);
     }
 
     private void OnDestroy()
     {
-        BuildManager.buildManager.Built -= BuilManager_OnBuilt;
-        BuildManager.buildManager.Demolished -= BuildManager_OnDemolished;
-        GameManager.gameManager.StateChanged -= GameManager_OnStateChanged;
+        GameManager.Instance.UnsubscribeToGameStateChanged(GameManager_OnStateChanged);
     }
 
     public void PurchaseTurret(int turretID) 
     {
-        if(GameManager.gameManager.playerStats.credits < turretBlueprint.models[turretID].cost)
+        TurretBlueprint.Model model = turretBlueprint.models[turretID];
+
+        if (GameManager.Instance.playerStats.credits < model.buildCost)
         {
-            Debug.Log("Not enough credits!");
+            Debug.Log("Not enough credits to build!");
             return;
         }
 
-        BuildManager.buildManager.BuildTurret(turretBlueprint.models[turretID]);
+        GameManager.Instance.playerStats.credits -= model.buildCost;
+        buildManager.BuildTurret(model);
 
+    }
+
+    public void UpgradeTurret()
+    {
+        TurretBlueprint.Model model = turretBlueprint.models[buildManager.CurrentTurret.ID];
+        int nextLevel = buildManager.CurrentTurret.level;
+
+        if(nextLevel >= model.upgradeCosts.Length)
+        {
+            Debug.Log("Upgrade maxed");
+            return;
+        }
+
+        if (GameManager.Instance.playerStats.credits < model.upgradeCosts[nextLevel])
+        {
+            Debug.Log("Not enough credits to upgrade!");
+            return;
+        }
+
+        GameManager.Instance.playerStats.credits -= model.upgradeCosts[nextLevel];
+        buildManager.UpgradeTurret();
     }
 
     public void SellTurret()
     {
-        BuildManager.buildManager.DemolishTurret();
+        TurretBlueprint.Model model = turretBlueprint.models[buildManager.CurrentTurret.ID];
+        int currentLevel = buildManager.CurrentTurret.level - 1;
+        int totalUpgradeCost = 0;
+        for (int i = 1; i <= currentLevel; i++) totalUpgradeCost += model.upgradeCosts[i];
+        GameManager.Instance.playerStats.credits += Mathf.RoundToInt(sellMultiplier * (model.buildCost + totalUpgradeCost));
+        buildManager.DemolishTurret();
     }
 
-    private void BuilManager_OnBuilt(GameObject builtTurret)
+    private void GameManager_OnStateChanged(GameStateManager.GameState gameState)
     {
-        TurretBlueprint.Model model = turretBlueprint.models[builtTurret.GetComponent<Turret>().ID];
-        GameManager.gameManager.playerStats.credits -= model.cost;
-        // Play sound and effect here
-    }
-
-    private void BuildManager_OnUpgraded()
-    {
-        //TurretBlueprint.Model model = turretBlueprint.models[e.ModelID];
-        //Debug.Log(model.cost);
-    }
-
-    private void BuildManager_OnDemolished(int demolishedTurretID) 
-    {
-        TurretBlueprint.Model model = turretBlueprint.models[demolishedTurretID];
-        GameManager.gameManager.playerStats.credits += Mathf.RoundToInt(sellMultiplier * model.cost);
-        // Play sound and effect here
-    }
-
-    private void GameManager_OnStateChanged(GameManager.GameState gameState)
-    {
-        if (gameState == GameManager.GameState.Preparing) sellMultiplier = 1f;
+        if (gameState == GameStateManager.GameState.Preparing) sellMultiplier = 1f;
         else sellMultiplier = 0.5f;
     }
 }

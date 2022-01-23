@@ -8,7 +8,7 @@ public class WaveSpawner : MonoBehaviour
     // Track current countdown of all spawners (shared between spawners)
     static public int CountDown { get; set; }
 
-    public delegate void OnStateChangedHandler(WaveSpawnerState gameState);
+    public delegate void OnStateChangedHandler(WaveSpawnerState waveSpawnerState);
     public event OnStateChangedHandler StateChanged;
 
     public enum WaveSpawnerState
@@ -18,7 +18,7 @@ public class WaveSpawner : MonoBehaviour
         Active
     }
 
-    public WaveSpawnerState State { get; private set; }
+    public WaveSpawnerState CurrentState { get; private set; }
     public int CurrentWaveIndex { get; set; }
 
     [Header("Game Specifications", order = 0)]
@@ -38,41 +38,37 @@ public class WaveSpawner : MonoBehaviour
     private GameObject[] mobPrefabs;
     [SerializeField]
     private WayPoints wayPoints;
+    [SerializeField]
+    private int autoSaveModifier;
 
     private void Awake()
     {
-        GameManager.gameManager.StateChanged += GameManager_StateChanged;
+        GameManager.Instance.SubscribeToGameStateChanged(GameManager_StateChanged);
     }
 
     private void Start()
     {
-        Load(0);
+        CurrentWaveIndex = 0;
     }
 
     private void OnDestroy()
     {
-        GameManager.gameManager.StateChanged -= GameManager_StateChanged;
+        GameManager.Instance.UnsubscribeToGameStateChanged(GameManager_StateChanged);
     }
 
-    // Used for loading level
-    public void Load(int currentWaveIndex)
+    public void SetNewState(WaveSpawnerState newWaveSpawnerState)
     {
-        CurrentWaveIndex = currentWaveIndex;
-    }
+        if (CurrentState == newWaveSpawnerState) return;
 
-    public void SetState(WaveSpawnerState waveSpawnerState)
-    {
-        if (State == waveSpawnerState) return;
-
-        State = waveSpawnerState;
-        StateChanged?.Invoke(waveSpawnerState);
+        CurrentState = newWaveSpawnerState;
+        StateChanged?.Invoke(newWaveSpawnerState);
     }
 
     private IEnumerator Spawn()
     {
         Counter++;
         CountDown = Mathf.RoundToInt(timeBetweenWaves);
-        SetState(WaveSpawnerState.Active);
+        SetNewState(WaveSpawnerState.Active);
 
         // Begin spawning
         while (CurrentWaveIndex < mobPrefabs.Length)
@@ -95,12 +91,15 @@ public class WaveSpawner : MonoBehaviour
             // Wait for the last mob to disappear
              yield return new WaitWhile(() => { return Mob.Counter != 0; });
 
-            // End coroutine if the last wave ends
+            //Auto-save
             CurrentWaveIndex++;
+            if (CurrentWaveIndex % autoSaveModifier == 0) GameManager.Instance.SetNewState(GameStateManager.GameState.Saving);
+
+            // End coroutine if the last wave ends
             if (CurrentWaveIndex == mobPrefabs.Length) 
             {
                 Counter--;
-                SetState(WaveSpawnerState.Inactive);
+                SetNewState(WaveSpawnerState.Inactive);
                 yield break; 
             }
 
@@ -113,9 +112,10 @@ public class WaveSpawner : MonoBehaviour
         }
     }
 
-    // Only called once at the beginning of the game
-    private void GameManager_StateChanged(GameManager.GameState gameState)
+    
+    private void GameManager_StateChanged(GameStateManager.GameState gameState)
     {
-        if (gameState == GameManager.GameState.Playing && State != WaveSpawnerState.Active) StartCoroutine(Spawn());
+        // Only called once at the beginning of the game
+        if (gameState == GameStateManager.GameState.Playing && CurrentState != WaveSpawnerState.Active) StartCoroutine(Spawn());
     }
 }

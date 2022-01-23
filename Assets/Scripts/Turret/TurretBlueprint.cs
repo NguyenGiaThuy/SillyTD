@@ -1,14 +1,15 @@
 using System;
 using UnityEngine;
 
-[Serializable]
-public class TurretBlueprint
+[CreateAssetMenu]
+public class TurretBlueprint : ScriptableObject
 {
     [Serializable]
     public class Model
     {
         public int id;
-        public int cost;
+        public int buildCost;
+        public int[] upgradeCosts;
         public GameObject turretPrefab;
     }
 

@@ -20,7 +20,7 @@ public abstract class AttackTurret : Turret
     //[Header("Optional", order = 1)]
     //public int level;
     [Header("Mandatory", order = 1)]
-    public AttackTurretData data;
+    public AttackTurretStats stats;
 
     [Header("Unity Specifications", order = 0)]
     [Header("Optional", order = 1)]
@@ -47,7 +47,7 @@ public abstract class AttackTurret : Turret
 
     private void Start()
     {
-        fireCountdown = data.fireCooldown - 1f;
+        fireCountdown = stats.fireCooldown - 1f;
         SetState(TurretState.Idling);
         StartCoroutine(SearchTarget());
         audioSource = GetComponent<AudioSource>();
@@ -69,13 +69,13 @@ public abstract class AttackTurret : Turret
         }
 
         // Reload
-        if (fireCountdown <= data.fireCooldown) fireCountdown += Time.deltaTime;
+        if (fireCountdown <= stats.fireCooldown) fireCountdown += Time.deltaTime;
     }
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.DrawWireSphere(transform.position, data.minRange);
-        Gizmos.DrawWireSphere(transform.position, data.maxRange);
+        Gizmos.DrawWireSphere(transform.position, stats.minRange);
+        Gizmos.DrawWireSphere(transform.position, stats.maxRange);
     }
 
     protected void SetState(TurretState turretState)
@@ -86,21 +86,14 @@ public abstract class AttackTurret : Turret
         StateChanged?.Invoke(turretState);
     }
 
-    public void CopyTransform(AttackTurret other)
-    {
-        transform.position = other.transform.position;
-        transform.rotation = other.transform.rotation;
-        partToRotatePrefab.transform.rotation = other.partToRotatePrefab.transform.rotation;
-    }
-
     private IEnumerator SearchTarget()
     {
         // Only search on interval
         while (true)
         {
             // If target is out of range, search new target
-            if (target == null || Vector3.Distance(transform.position, target.transform.position) > data.maxRange 
-                || Vector3.Distance(transform.position, target.transform.position) < data.minRange)
+            if (target == null || Vector3.Distance(transform.position, target.transform.position) > stats.maxRange 
+                || Vector3.Distance(transform.position, target.transform.position) < stats.minRange)
             {
                 // Search for ground and flying mobs
                 GameObject[] groundMobs = GameObject.FindGameObjectsWithTag("GroundMob");
@@ -129,8 +122,8 @@ public abstract class AttackTurret : Turret
             float targetDistance = Vector3.Distance(transform.position, mob.transform.position);
             float targetDistanceFromEndPoint = mob.GetCurrentPathLength();
 
-            if (targetDistance <= data.maxRange 
-                && targetDistance >= data.minRange 
+            if (targetDistance <= stats.maxRange 
+                && targetDistance >= stats.minRange 
                 && targetDistanceFromEndPoint < closestDistanceFromEndPoint)
             {
                 closestTargetFromEndPoint = mob;
@@ -173,7 +166,7 @@ public abstract class AttackTurret : Turret
         }
 
         // Fire if reloaded
-        if (fireCountdown > data.fireCooldown)
+        if (fireCountdown > stats.fireCooldown)
         {
             audioSource.Play();
 

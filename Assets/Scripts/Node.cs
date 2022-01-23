@@ -5,18 +5,23 @@ public class Node : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IP
 {
     public bool Empty { get { return turret == null; } }
 
-    public GameObject turret;
+    public Turret turret;
+    public int turretID;
     [SerializeField]
     private Color hoverColor;
 
     // Hidden fields
     private Color initialColor;
     private Renderer nodeRenderer;
+    private NodeUI nodeUI;
+    private BuildManager buildManager;
 
     private void Start()
     {
+        buildManager = FindObjectOfType<BuildManager>();
         nodeRenderer = GetComponent<Renderer>();
         initialColor = nodeRenderer.material.color;
+        nodeUI = FindObjectOfType<NodeUI>();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -28,14 +33,21 @@ public class Node : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IP
     {
         if (eventData.button == PointerEventData.InputButton.Left)
         {
-            BuildManager.buildManager.selectedNode = this;
-            NodeUI.nodeUI.ShowPanel(this);
+            buildManager.selectedNode = this;
+            nodeUI.ShowPanel(this);
         }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         nodeRenderer.material.color = initialColor;
+    }
+
+    public void SetTurret(Turret turret)
+    {
+        this.turret = turret;
+        turret.transform.parent = transform;
+        turretID = turret.ID;
     }
 }
 

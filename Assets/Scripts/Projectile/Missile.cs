@@ -5,7 +5,7 @@ public class Missile : Projectile
     protected override int GetFinalDamge()
     {
         // Calculate damage for each armor type
-        float finalDamage = sourceTurret.data.damage;
+        float finalDamage = sourceTurret.stats.damage;
         switch(target.armor) 
         {
             case Mob.ArmorType.Light:

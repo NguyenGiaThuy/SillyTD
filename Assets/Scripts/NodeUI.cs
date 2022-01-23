@@ -3,8 +3,6 @@ using UnityEngine.UI;
 
 public class NodeUI : MonoBehaviour
 {
-    public static NodeUI nodeUI;
-
     [SerializeField]
     private GameObject canvas;
 
@@ -12,14 +10,14 @@ public class NodeUI : MonoBehaviour
     private Transform canvasTransform;
     private Node selectedNode;
     private GameObject panel;
-    private Button[] buttons;
+    private BuildManager buildManager;
 
     private void Awake()
     {
-        if (nodeUI != null) Destroy(gameObject);
-        else nodeUI = this;
-        BuildManager.buildManager.Built += BuildManager_OnBuilt;
-        BuildManager.buildManager.Demolished += BuildManager_OnDemolished;
+        buildManager = FindObjectOfType<BuildManager>();
+        buildManager.Built += BuildManager_OnBuilt;
+        buildManager.Demolished += BuildManager_OnDemolished;
+        buildManager.Upgraded += BuildManager_Upgraded;
     }
 
     private void Start()
@@ -29,8 +27,8 @@ public class NodeUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        BuildManager.buildManager.Built -= BuildManager_OnBuilt;
-        BuildManager.buildManager.Demolished -= BuildManager_OnDemolished;
+        buildManager.Built -= BuildManager_OnBuilt;
+        buildManager.Demolished -= BuildManager_OnDemolished;
     }
 
     public void ShowPanel(Node nodeToSelect)
@@ -48,7 +46,6 @@ public class NodeUI : MonoBehaviour
         }
 
         panel.gameObject.SetActive(true);
-        buttons = panel.GetComponentsInChildren<Button>();
         canvasTransform.position = panelPosition;
     }
 
@@ -57,12 +54,17 @@ public class NodeUI : MonoBehaviour
         if(panel != null) panel.gameObject.SetActive(false);
     }
 
-    private void BuildManager_OnBuilt(GameObject builtTurret)
+    private void BuildManager_OnBuilt(Node builtNode)
     {
         HidePanel();
     }
 
-    private void BuildManager_OnDemolished(int demolishedTurretID)
+    private void BuildManager_OnDemolished(Node demolishedNode)
+    {
+        HidePanel();
+    }
+
+    private void BuildManager_Upgraded(Node upgradedNode)
     {
         HidePanel();
     }
