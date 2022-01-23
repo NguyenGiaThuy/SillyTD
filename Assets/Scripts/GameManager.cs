@@ -77,30 +77,28 @@ public class GameManager : MonoBehaviour
                 break;
             case GameStateManager.GameState.New:
                 LoadLevel(1);
-                StartCoroutine(SetNewStateAfter(GameStateManager.GameState.Initializing, sceneLoadingTime / 2, true));
+                StartCoroutine(SetNewStateAfter(GameStateManager.GameState.Initializing, sceneLoadingTime, true));
                 break;
-
             case GameStateManager.GameState.Resuming:
                 gameData = LoadData();
                 LoadGameManger(gameData.gameManagerData);
                 LoadLevel(levelIndex);
-                StartCoroutine(SetNewStateAfter(GameStateManager.GameState.Initializing, sceneLoadingTime / 2, true));
+                StartCoroutine(SetNewStateAfter(GameStateManager.GameState.Initializing, sceneLoadingTime, true));
                 break;
-
             case GameStateManager.GameState.Saving:
                 SaveData();
                 SetNewState(previousGameState);
                 break;
             case GameStateManager.GameState.Initializing:
                 InitializeGameManager();
-                switch(previousGameState)
+                switch (previousGameState)
                 {
                     case GameStateManager.GameState.New:
-                        StartCoroutine(SetNewStateAfter(GameStateManager.GameState.Preparing, sceneLoadingTime / 2, true));
+                        SetNewState(GameStateManager.GameState.Preparing);
                         break;
                     case GameStateManager.GameState.Resuming:
                         InitializeLevel();
-                        StartCoroutine(SetNewStateAfter(savedState, sceneLoadingTime / 2, true));
+                        SetNewState(savedState);
                         break;
                 }
                 break;
