@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.13868912, g: 0.17362563, b: 0.23609297, a: 1}
+  m_IndirectSpecularColor: {r: 0.13868973, g: 0.17362647, b: 0.23609364, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3416,7 +3416,7 @@ RectTransform:
   m_GameObject: {fileID: 240657502}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7249, y: 1, z: 1}
+  m_LocalScale: {x: 0.8171607, y: 1.1272738, z: 1.1272738}
   m_Children:
   - {fileID: 391274643}
   m_Father: {fileID: 798960607}
@@ -3424,7 +3424,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.34714785, y: 0.70031375}
   m_AnchorMax: {x: 0.64622456, y: 1}
-  m_AnchoredPosition: {x: 0.0014038086, y: 0.015930176}
+  m_AnchoredPosition: {x: 0.0014038086, y: 23}
   m_SizeDelta: {x: 56.746, y: 0.031891}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &240657504
@@ -3496,14 +3496,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 4b0e37938486d524aaada595be705129, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5495,7 +5495,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &391274643
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8452,7 +8452,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 16
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &663062017
 GameObject:
@@ -9549,7 +9549,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &761228672
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10219,7 +10219,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &798960607
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10309,8 +10309,8 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 804926084}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7249, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
+  m_LocalScale: {x: 0.8063788, y: 1.1124, z: 1.1124}
   m_Children:
   - {fileID: 761228672}
   m_Father: {fileID: 798960607}
@@ -10318,7 +10318,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.3522848}
   m_AnchorMax: {x: 0.30060813, y: 0.6507773}
-  m_AnchoredPosition: {x: 0.09655762, y: 0}
+  m_AnchoredPosition: {x: -17, y: 18}
   m_SizeDelta: {x: 56.77, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &804926086
@@ -10390,14 +10390,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: fcdf14c98a15987449b0ee0337eb4dbb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -10456,7 +10456,7 @@ RectTransform:
   m_GameObject: {fileID: 806456415}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7249, y: 1, z: 1}
+  m_LocalScale: {x: 0.703153, y: 0.97, z: 0.97}
   m_Children:
   - {fileID: 1307092146}
   m_Father: {fileID: 798960607}
@@ -23723,7 +23723,7 @@ PrefabInstance:
     - target: {fileID: 1907623499319849186, guid: 464a503dba6a9d04cb26869fea9e61e0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 17
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 1907623499319849186, guid: 464a503dba6a9d04cb26869fea9e61e0,
         type: 3}
