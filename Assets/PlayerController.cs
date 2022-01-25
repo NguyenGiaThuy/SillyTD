@@ -43,9 +43,6 @@ public class PlayerController : MonoBehaviour
             case GameStateManager.GameState.Preparing:
                 inputActions.Enable();
                 break;
-            default:
-                inputActions.Disable();
-                break;
         }
     }
 

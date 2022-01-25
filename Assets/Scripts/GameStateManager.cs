@@ -10,7 +10,6 @@ public class GameStateManager
         MainMenu,
         New,
         Resuming,
-        Saving,
         Initializing,
         Preparing,
         Playing,

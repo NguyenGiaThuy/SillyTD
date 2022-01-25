@@ -15,17 +15,17 @@ MonoBehaviour:
   models:
   - id: 0
     buildCost: 100
-    upgradeCosts: 00000000000000000000000000000000
+    upgradeCosts: 000000003c0000005000000064000000
     turretPrefab: {fileID: 3918557593112601740, guid: 9884debe1e593d048bcf24db5978d996,
       type: 3}
   - id: 1
     buildCost: 200
-    upgradeCosts: 00000000000000000000000000000000
+    upgradeCosts: 00000000a0000000be000000dc000000
     turretPrefab: {fileID: 6186987861751671330, guid: e230909320b9de742bcce831b5985edb,
       type: 3}
   - id: 2
     buildCost: 400
-    upgradeCosts: 00000000000000000000000000000000
+    upgradeCosts: 00000000c80000005e010000f4010000
     turretPrefab: {fileID: 5106394565762745463, guid: ec8c85d98c2075f48bf079c6f13643b2,
       type: 3}
   - id: 3

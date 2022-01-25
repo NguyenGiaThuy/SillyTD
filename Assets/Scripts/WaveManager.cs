@@ -38,15 +38,11 @@ public class WaveManager : MonoBehaviour
         CurrentState = WaveState.NotStarted;
     }
 
-    private void OnDestroy()
-    {
-        SceneManager.sceneUnloaded -= SceneManager_sceneUnloaded;
+    private void SceneManager_sceneUnloaded(Scene arg0)
+    { 
         GameManager.Instance.OnLevelInitialized -= Instance_OnLevelInitialized;
         OnStateChanged -= WaveManager_OnStateChanged;
-    }
-
-    private void SceneManager_sceneUnloaded(Scene arg0)
-    {
+        SceneManager.sceneUnloaded -= SceneManager_sceneUnloaded;
         Instance = null;
     }
 

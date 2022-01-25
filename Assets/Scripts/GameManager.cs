@@ -27,8 +27,7 @@ public class GameManager : MonoBehaviour
     // Hidden fields
     private GameStateManager gameStateManager;
     private GameObject loadingCanvas;
-    private WaveSpawner[] waveSpawners;
-    private LevelData levelStats;
+    private LevelStats levelStats;
     private GameData gameData;
 
     private void Awake()
@@ -99,10 +98,6 @@ public class GameManager : MonoBehaviour
                 LoadLevel(levelIndex);
                 SetNewState(GameStateManager.GameState.Initializing);
                 break;
-            case GameStateManager.GameState.Saving:
-                SaveData();
-                SetNewState(previousGameState);
-                break;
             case GameStateManager.GameState.Initializing:
                 switch (previousGameState)
                 {
@@ -127,9 +122,11 @@ public class GameManager : MonoBehaviour
                 PauseGame();
                 break;
             case GameStateManager.GameState.Victorious:
-                SetNewState(GameStateManager.GameState.Saving);
+                Debug.Log("Victorious");
+                SaveData();
                 break;
             case GameStateManager.GameState.Lost:
+                Debug.Log("Lost");
                 break;
         }
     }
@@ -185,11 +182,15 @@ public class GameManager : MonoBehaviour
     }
     private void LoadWaveManager(WaveManagerData waveManagerData)
     {
-        waveManagerData.Load(WaveManager.Instance); //BUG?????
+        waveManagerData.Load(WaveManager.Instance);
     }
     private void LoadGameManger(GameManagerData gameManagerData)
     {
         gameManagerData.Load(this);
+    }
+    private void LoadPlayerStats(PlayerData playerData)
+    {
+        playerData.Load(playerStats);
     }
     //########## Loading methods ENDS ##########
 
@@ -211,8 +212,9 @@ public class GameManager : MonoBehaviour
         }
 
         GameManagerData gameManagerData = SaveGameManager();
+        PlayerData playerData = SavePlayerStats();
         GameData gameData = new GameData();
-        gameData.Save(attackTurretDatas, nodeDatas, waveManagerData, gameManagerData);
+        gameData.Save(attackTurretDatas, nodeDatas, waveManagerData, gameManagerData, playerData);
 
         string path = Path.Combine(Application.persistentDataPath, "gamesave.dat");
         FileStream file = File.Create(path);
@@ -258,6 +260,12 @@ public class GameManager : MonoBehaviour
         gameManagerData.Save(this);
         return gameManagerData;
     }
+    private PlayerData SavePlayerStats()
+    {
+        PlayerData playerData = new PlayerData();
+        playerData.Save(playerStats);
+        return playerData;
+    }
     //########## Saving methods ENDS ##########
 
 
@@ -265,11 +273,14 @@ public class GameManager : MonoBehaviour
     //########## Utility methods STARTS ##########
     private void InitializeGameManager()
     {
-        levelStats = Resources.Load<LevelData>("LevelData" + SceneManager.GetActiveScene().buildIndex);
+        levelStats = Resources.Load<LevelStats>("LevelStats" + levelIndex);
 
         // Subscribe to WaveManager events
         WaveManager.OnStateChanged -= WaveManager_OnStateChanged;
         WaveManager.OnStateChanged += WaveManager_OnStateChanged;
+
+        playerStats = new PlayerStats();
+        playerStats.LoadLevelStats(levelStats);
     }
     private IEnumerator InitializeLevelAfter(float seconds)
     {
@@ -278,6 +289,7 @@ public class GameManager : MonoBehaviour
         LoadAttackTurrets(gameData.attackTurretDatas);
         LoadNodes(gameData.nodeDatas);
         LoadWaveManager(gameData.waveManagerData);
+        LoadPlayerStats(gameData.playerData);
         OnLevelInitialized?.Invoke();
     }
     private void WaveManager_OnStateChanged(WaveManager.WaveState waveState)
@@ -287,8 +299,7 @@ public class GameManager : MonoBehaviour
             case WaveManager.WaveState.Started:
                 break;
             case WaveManager.WaveState.Ended:
-                if (WaveManager.Instance.CurrentWaveIndex % autoSaveFrequency == 0)
-                    SetNewState(GameStateManager.GameState.Saving);
+                if (WaveManager.Instance.CurrentWaveIndex % autoSaveFrequency == 0) SaveData();
                 break;
             case WaveManager.WaveState.AllEnded:
                 SetNewState(GameStateManager.GameState.Victorious);

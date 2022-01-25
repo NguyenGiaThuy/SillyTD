@@ -3,7 +3,7 @@ using UnityEngine;
 
 [Serializable]
 [CreateAssetMenu]
-public class LevelData : ScriptableObject
+public class LevelStats : ScriptableObject
 {
     public int initialCredits;
     public int initialLives;

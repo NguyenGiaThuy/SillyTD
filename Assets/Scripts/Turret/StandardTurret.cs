@@ -6,7 +6,7 @@ public class StandardTurret : AttackTurret
     {
         ID = 0;
         canAntiAir = true;
-        stats = Resources.Load<AttackTurretStats>("StandardTurretData/StandardTurretData" + level);
+        attackTurretStats = Resources.Load<AttackTurretStats>("StandardTurretStats/StandardTurretStats" + level);
         LevelIncreased += StandardTurret_LevelIncreased;
     }
 
@@ -17,6 +17,6 @@ public class StandardTurret : AttackTurret
 
     private void StandardTurret_LevelIncreased()
     {
-        stats = Resources.Load<AttackTurretStats>("StandardTurretData/StandardTurretData" + level);
+        attackTurretStats = Resources.Load<AttackTurretStats>("StandardTurretStats/StandardTurretStats" + level);
     }
 }

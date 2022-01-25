@@ -3,19 +3,18 @@ using System;
 [Serializable]
 public class PlayerStats
 {
-    public int levelIndex;
     public int credits;
     public int lives;
     public int researchPoints;
 
-    public PlayerStats(int levelIndex)
+    public PlayerStats()
     {
-        this.levelIndex = levelIndex;
+        researchPoints = 0;
     }
 
-    public void UpdateStats(int credits, int lives)
+    public void LoadLevelStats(LevelStats levelStats)
     {
-        this.credits = credits;
-        this.lives = lives;
+        credits = levelStats.initialCredits;
+        lives = levelStats.initialLives;
     }
 }

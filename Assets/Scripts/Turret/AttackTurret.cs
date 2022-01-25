@@ -20,7 +20,7 @@ public abstract class AttackTurret : Turret
     //[Header("Optional", order = 1)]
     //public int level;
     [Header("Mandatory", order = 1)]
-    public AttackTurretStats stats;
+    public AttackTurretStats attackTurretStats;
 
     [Header("Unity Specifications", order = 0)]
     [Header("Optional", order = 1)]
@@ -47,7 +47,7 @@ public abstract class AttackTurret : Turret
 
     private void Start()
     {
-        fireCountdown = stats.fireCooldown - 1f;
+        fireCountdown = attackTurretStats.fireCooldown - 1f;
         SetState(TurretState.Idling);
         StartCoroutine(SearchTarget());
         audioSource = GetComponent<AudioSource>();
@@ -69,13 +69,13 @@ public abstract class AttackTurret : Turret
         }
 
         // Reload
-        if (fireCountdown <= stats.fireCooldown) fireCountdown += Time.deltaTime;
+        if (fireCountdown <= attackTurretStats.fireCooldown) fireCountdown += Time.deltaTime;
     }
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.DrawWireSphere(transform.position, stats.minRange);
-        Gizmos.DrawWireSphere(transform.position, stats.maxRange);
+        Gizmos.DrawWireSphere(transform.position, attackTurretStats.minRange);
+        Gizmos.DrawWireSphere(transform.position, attackTurretStats.maxRange);
     }
 
     protected void SetState(TurretState turretState)
@@ -92,8 +92,8 @@ public abstract class AttackTurret : Turret
         while (true)
         {
             // If target is out of range, search new target
-            if (target == null || Vector3.Distance(transform.position, target.transform.position) > stats.maxRange 
-                || Vector3.Distance(transform.position, target.transform.position) < stats.minRange)
+            if (target == null || Vector3.Distance(transform.position, target.transform.position) > attackTurretStats.maxRange 
+                || Vector3.Distance(transform.position, target.transform.position) < attackTurretStats.minRange)
             {
                 // Search for ground and flying mobs
                 GameObject[] groundMobs = GameObject.FindGameObjectsWithTag("GroundMob");
@@ -122,8 +122,8 @@ public abstract class AttackTurret : Turret
             float targetDistance = Vector3.Distance(transform.position, mob.transform.position);
             float targetDistanceFromEndPoint = mob.GetCurrentPathLength();
 
-            if (targetDistance <= stats.maxRange 
-                && targetDistance >= stats.minRange 
+            if (targetDistance <= attackTurretStats.maxRange 
+                && targetDistance >= attackTurretStats.minRange 
                 && targetDistanceFromEndPoint < closestDistanceFromEndPoint)
             {
                 closestTargetFromEndPoint = mob;
@@ -166,7 +166,7 @@ public abstract class AttackTurret : Turret
         }
 
         // Fire if reloaded
-        if (fireCountdown > stats.fireCooldown)
+        if (fireCountdown > attackTurretStats.fireCooldown)
         {
             audioSource.Play();
 
