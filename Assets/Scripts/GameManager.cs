@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviour
     //########## State management methods STARTS ##########
     public void SetNewState(GameStateManager.GameState newGameState)
     {
+        if (CurrentState == newGameState) return;
         previousGameState = CurrentState;
         gameStateManager.SetNewState(newGameState);
     }
