@@ -13,12 +13,12 @@ public class Shop : MonoBehaviour
     private void Awake() 
     {
         buildManager = FindObjectOfType<BuildManager>();
-        GameManager.Instance.SubscribeToGameStateChanged(GameManager_OnStateChanged);
+        GameManager.Instance.SubscribeToOnGameStateChanged(GameManager_OnStateChanged);
     }
 
     private void OnDestroy()
     {
-        GameManager.Instance.UnsubscribeToGameStateChanged(GameManager_OnStateChanged);
+        GameManager.Instance.UnsubscribeToOnGameStateChanged(GameManager_OnStateChanged);
     }
 
     public void PurchaseTurret(int turretID) 

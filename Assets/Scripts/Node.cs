@@ -54,6 +54,7 @@ public class Node : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IP
         if (eventData.button == PointerEventData.InputButton.Left)
         {
             buildManager.selectedNode = this;
+            informationPanel.SetActive(false);
             nodeUI.ShowPanel(this);
         }
     }

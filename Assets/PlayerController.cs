@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         inputActions = new CustomInputActions();
-        GameManager.Instance.SubscribeToGameStateChanged(GameStateManager_OnStateChanged);
+        GameManager.Instance.SubscribeToOnGameStateChanged(GameStateManager_OnStateChanged);
         inputActions.Gameplay.PauseGame.performed += PauseGame_performed;
         inputActions.NodeUI.CancelNodeSelection.performed += CancelNodeSelection_performed;
     }
@@ -17,7 +17,10 @@ public class PlayerController : MonoBehaviour
     {
         if (GameManager.Instance.CurrentState == GameStateManager.GameState.Preparing ||
             GameManager.Instance.CurrentState == GameStateManager.GameState.Playing)
+        {
+            GameObject.Find("InformationCanvas").transform.GetChild(0).gameObject.SetActive(false);
             FindObjectOfType<NodeUI>().HidePanel();
+        }
     }
 
     private void PauseGame_performed(InputAction.CallbackContext obj)
@@ -48,7 +51,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameManager.Instance.UnsubscribeToGameStateChanged(GameStateManager_OnStateChanged);
+        GameManager.Instance.UnsubscribeToOnGameStateChanged(GameStateManager_OnStateChanged);
     }
 
 }

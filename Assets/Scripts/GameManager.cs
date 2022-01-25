@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+
+    public delegate void OnLevelInitializedHandler();
+    public event OnLevelInitializedHandler OnLevelInitialized;
 
     public GameStateManager.GameState CurrentState { get { return gameStateManager.CurrentState; } }
     public GameStateManager.GameState savedState;
@@ -17,6 +19,8 @@ public class GameManager : MonoBehaviour
     public int levelIndex;
     [SerializeField]
     private float sceneLoadingTime;
+    [SerializeField]
+    private int autoSaveFrequency;
     [SerializeField]
     private TurretBlueprint turretBlueprint;
 
@@ -37,7 +41,7 @@ public class GameManager : MonoBehaviour
         else Destroy(gameObject);
 
         gameStateManager = new GameStateManager();
-        gameStateManager.StateChanged += GameStateManager_StateChanged;
+        gameStateManager.OnStateChanged += GameStateManager_OnStateChanged;
         loadingCanvas = GameObject.Find("LoadingCanvas");
         loadingCanvas.SetActive(false);
         DontDestroyOnLoad(loadingCanvas);
@@ -51,13 +55,13 @@ public class GameManager : MonoBehaviour
         previousGameState = CurrentState;
         gameStateManager.SetNewState(newGameState);
     }
-    public void SubscribeToGameStateChanged(GameStateManager.OnStateChangedHandler handler)
+    public void SubscribeToOnGameStateChanged(GameStateManager.OnStateChangedHandler handler)
     {
-        gameStateManager.StateChanged += handler;
+        gameStateManager.OnStateChanged += handler;
     }
-    public void UnsubscribeToGameStateChanged(GameStateManager.OnStateChangedHandler handler)
+    public void UnsubscribeToOnGameStateChanged(GameStateManager.OnStateChangedHandler handler)
     {
-        gameStateManager.StateChanged -= handler;
+        gameStateManager.OnStateChanged -= handler;
     }
     // Loading screen
     IEnumerator SetNewStateAfter(GameStateManager.GameState newGameState, float seconds, bool enableLoadingScreen)
@@ -71,7 +75,7 @@ public class GameManager : MonoBehaviour
 
         Debug.Log(newGameState);
     }
-    private void GameStateManager_StateChanged(GameStateManager.GameState gameState)
+    private void GameStateManager_OnStateChanged(GameStateManager.GameState gameState)
     {
         switch (gameState)
         {
@@ -84,6 +88,14 @@ public class GameManager : MonoBehaviour
             case GameStateManager.GameState.Resuming:
                 gameData = LoadData();
                 LoadGameManger(gameData.gameManagerData);
+
+                // If player wins last game, re-init new level and new game state
+                if (savedState == GameStateManager.GameState.Victorious)
+                {
+                    levelIndex += 1;
+                    savedState = GameStateManager.GameState.Preparing;
+                }
+
                 LoadLevel(levelIndex);
                 SetNewState(GameStateManager.GameState.Initializing);
                 break;
@@ -101,20 +113,12 @@ public class GameManager : MonoBehaviour
                     case GameStateManager.GameState.Resuming:
                         StartCoroutine(SetNewStateAfter(savedState, sceneLoadingTime, true));
                         InitializeGameManager();
-                        InitializeLevel();
+                        StartCoroutine(InitializeLevelAfter(sceneLoadingTime / 3));
                         break;
                 }
                 break;
             case GameStateManager.GameState.Preparing:
-                switch (previousGameState)
-                {
-                    case GameStateManager.GameState.Initializing:
-                        SaveData();
-                        break;
-                    case GameStateManager.GameState.Pausing:
-                        UnPauseGame();
-                        break;
-                }
+                if(CurrentState == GameStateManager.GameState.Pausing) UnPauseGame();
                 break;
             case GameStateManager.GameState.Playing:
                 if (previousGameState == GameStateManager.GameState.Pausing) UnPauseGame();
@@ -123,6 +127,7 @@ public class GameManager : MonoBehaviour
                 PauseGame();
                 break;
             case GameStateManager.GameState.Victorious:
+                SetNewState(GameStateManager.GameState.Saving);
                 break;
             case GameStateManager.GameState.Lost:
                 break;
@@ -178,6 +183,10 @@ public class GameManager : MonoBehaviour
                 }
             }
     }
+    private void LoadWaveManager(WaveManagerData waveManagerData)
+    {
+        waveManagerData.Load(WaveManager.Instance); //BUG?????
+    }
     private void LoadGameManger(GameManagerData gameManagerData)
     {
         gameManagerData.Load(this);
@@ -189,11 +198,21 @@ public class GameManager : MonoBehaviour
     //########## Saving methods STARTS ##########
     private void SaveData()
     {
-        List<AttackTurretData> attackTurretDatas = SaveAttackTurrets();
-        List<NodeData> nodeDatas = SaveNodes();
+        List<AttackTurretData> attackTurretDatas = null;
+        List<NodeData> nodeDatas = null;
+        WaveManagerData waveManagerData = null;
+
+        // Only save scene if the game is still playing
+        if (CurrentState != GameStateManager.GameState.Victorious)
+        {
+            attackTurretDatas = SaveAttackTurrets();
+            nodeDatas = SaveNodes();
+            waveManagerData = SaveWaveManager();
+        }
+
         GameManagerData gameManagerData = SaveGameManager();
         GameData gameData = new GameData();
-        gameData.Save(attackTurretDatas, nodeDatas, gameManagerData);
+        gameData.Save(attackTurretDatas, nodeDatas, waveManagerData, gameManagerData);
 
         string path = Path.Combine(Application.persistentDataPath, "gamesave.dat");
         FileStream file = File.Create(path);
@@ -227,6 +246,12 @@ public class GameManager : MonoBehaviour
         }
         return nodeDatas;
     }
+    private WaveManagerData SaveWaveManager()
+    {
+        WaveManagerData waveManagerData = new WaveManagerData();
+        waveManagerData.Save(WaveManager.Instance);
+        return waveManagerData;
+    }
     private GameManagerData SaveGameManager()
     {
         GameManagerData gameManagerData = new GameManagerData();
@@ -242,23 +267,33 @@ public class GameManager : MonoBehaviour
     {
         levelStats = Resources.Load<LevelData>("LevelData" + SceneManager.GetActiveScene().buildIndex);
 
-        // Subscribe to WaveSpawner event
-        waveSpawners = FindObjectsOfType<WaveSpawner>();
-        foreach (WaveSpawner waveSpawner in waveSpawners) waveSpawner.StateChanged += WaveSpawner_StateChanged;
-
-        // Logics:
-        // - Load player stats from file
-        // - If saved state = {preparing, victorious} then overwrite player stats with level Stats and return
-        // - If saved state = {playing, lost} then load all saved objects
+        // Subscribe to WaveManager events
+        WaveManager.OnStateChanged -= WaveManager_OnStateChanged;
+        WaveManager.OnStateChanged += WaveManager_OnStateChanged;
     }
-    private void InitializeLevel()
+    private IEnumerator InitializeLevelAfter(float seconds)
     {
+        yield return new WaitForSeconds(seconds);
+
         LoadAttackTurrets(gameData.attackTurretDatas);
         LoadNodes(gameData.nodeDatas);
+        LoadWaveManager(gameData.waveManagerData);
+        OnLevelInitialized?.Invoke();
     }
-    private void WaveSpawner_StateChanged(WaveSpawner.WaveSpawnerState waveSpawnerState)
+    private void WaveManager_OnStateChanged(WaveManager.WaveState waveState)
     {
-        if (waveSpawnerState == WaveSpawner.WaveSpawnerState.Inactive && WaveSpawner.Counter == 0) SetNewState(GameStateManager.GameState.Victorious);
+        switch(waveState)
+        {
+            case WaveManager.WaveState.Started:
+                break;
+            case WaveManager.WaveState.Ended:
+                if (WaveManager.Instance.CurrentWaveIndex % autoSaveFrequency == 0)
+                    SetNewState(GameStateManager.GameState.Saving);
+                break;
+            case WaveManager.WaveState.AllEnded:
+                SetNewState(GameStateManager.GameState.Victorious);
+                break;
+        } 
     }
     //########## Utility methods ENDS ##########
 
