@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ac113545dc1c6242b2c23601ef9fb1d, type: 3}
+  m_Name: MissileLauncherInformation
+  m_EditorClassIdentifier: 
+  avatar: {fileID: 21300000, guid: 9f891f94a41c1dc4ebebddb968924c8d, type: 3}
+  description: A general-purposed turret. Deals small area of damage and deals reduced
+    damge to light armor but extra damage to heavy armor. Can target air units.
+  blueprint: {fileID: 11400000, guid: b94fbc1a8de31ad4bae0e1ceec2ac2ca, type: 2}
+  turretStats:
+  - {fileID: 11400000, guid: 7020fb82a490fc141ae5fd0a85d0774b, type: 2}
+  - {fileID: 11400000, guid: 75f7fc9f4c4e533469e6fba3245268d3, type: 2}
+  - {fileID: 11400000, guid: 85e2b7d8978cd4644b4a8862e0a81f23, type: 2}
+  - {fileID: 11400000, guid: 98025837383e30f429dc1ff050ad8af3, type: 2}

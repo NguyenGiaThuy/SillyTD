@@ -6,8 +6,13 @@ using UnityEngine.UI;
 
 public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    public delegate void OnHoveredHandler(int buildButtonID);
+    public static OnHoveredHandler OnHovered;
+
     [SerializeField]
     private GraphicRaycaster raycaster;
+    [SerializeField]
+    int id;
 
     private GameObject informationPanel;
     private PointerEventData pointerEventData;
@@ -23,6 +28,7 @@ public class BuildButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public void OnPointerEnter(PointerEventData eventData)
     {
         informationPanel.SetActive(true);
+        OnHovered?.Invoke(id);
     }
 
     public void OnPointerExit(PointerEventData eventData)

@@ -36,8 +36,8 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - BuffedTurret
+  - Turret
   - Mob
   - 
   m_SortingLayers:

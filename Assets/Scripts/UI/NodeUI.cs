@@ -4,11 +4,11 @@ using UnityEngine.UI;
 public class NodeUI : MonoBehaviour
 {
     public delegate void OnBuildPanelShowedHandler();
-    public event OnBuildPanelShowedHandler BuildPanelShowed;
+    public static event OnBuildPanelShowedHandler OnBuildPanelShowed;
     public delegate void OnModificationPanelShowedHandler();
-    public event OnModificationPanelShowedHandler ModificationPanelShowed;
+    public static event OnModificationPanelShowedHandler OnModificationPanelShowed;
     public delegate void OnPanelHiddenHandler();
-    public event OnPanelHiddenHandler PanelHidden;
+    public static event OnPanelHiddenHandler OnPanelHidden;
 
     [SerializeField]
     private GameObject canvas;
@@ -17,14 +17,12 @@ public class NodeUI : MonoBehaviour
     private Transform canvasTransform;
     private Node selectedNode;
     private GameObject panel;
-    private BuildManager buildManager;
 
     private void Awake()
     {
-        buildManager = FindObjectOfType<BuildManager>();
-        buildManager.Built += BuildManager_OnBuilt;
-        buildManager.Demolished += BuildManager_OnDemolished;
-        buildManager.Upgraded += BuildManager_Upgraded;
+        BuildManager.OnBuilt += BuildManager_OnBuilt;
+        BuildManager.OnDemolished += BuildManager_OnDemolished;
+        BuildManager.OnUpgraded += BuildManager_Upgraded;
     }
 
     private void Start()
@@ -34,8 +32,8 @@ public class NodeUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        buildManager.Built -= BuildManager_OnBuilt;
-        buildManager.Demolished -= BuildManager_OnDemolished;
+        BuildManager.OnBuilt -= BuildManager_OnBuilt;
+        BuildManager.OnDemolished -= BuildManager_OnDemolished;
     }
 
     public void ShowPanel(Node nodeToSelect)
@@ -48,13 +46,13 @@ public class NodeUI : MonoBehaviour
         if (selectedNode.Empty)
         {
             panel = transform.GetChild(0).GetChild(0).gameObject; // Build panel
-            BuildPanelShowed?.Invoke();
+            OnBuildPanelShowed?.Invoke();
         }
         else
         {
             panel = transform.GetChild(0).GetChild(1).gameObject; // Modification panel
             panelPosition = selectedNode.turret.transform.position + new Vector3(0f, 6.5f, 2f);
-            ModificationPanelShowed?.Invoke();
+            OnModificationPanelShowed?.Invoke();
         }
 
         panel.gameObject.SetActive(true);
@@ -66,7 +64,7 @@ public class NodeUI : MonoBehaviour
         if (panel != null)
         {
             panel.gameObject.SetActive(false);
-            PanelHidden?.Invoke();
+            OnPanelHidden?.Invoke();
         }
     }
 

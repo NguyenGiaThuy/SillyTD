@@ -21,8 +21,6 @@ public class GameManager : MonoBehaviour
     private float sceneLoadingTime;
     [SerializeField]
     private int autoSaveFrequency;
-    [SerializeField]
-    private TurretBlueprint turretBlueprint;
 
     // Hidden fields
     private GameStateManager gameStateManager;
@@ -41,6 +39,12 @@ public class GameManager : MonoBehaviour
 
         gameStateManager = new GameStateManager();
         gameStateManager.OnStateChanged += GameStateManager_OnStateChanged;
+        WaveManager.OnStateChanged += WaveManager_OnStateChanged;
+        Exit.OnAttacked += Exit_OnAttacked;
+        Mob.OnDead += Mob_OnDead;
+
+        BuildManager.InitializeTurretBlueprint();
+
         loadingCanvas = GameObject.Find("LoadingCanvas");
         loadingCanvas.SetActive(false);
         DontDestroyOnLoad(loadingCanvas);
@@ -52,78 +56,40 @@ public class GameManager : MonoBehaviour
     public void SetNewState(GameStateManager.GameState newGameState)
     {
         if (CurrentState == newGameState) return;
+
         previousGameState = CurrentState;
         gameStateManager.SetNewState(newGameState);
     }
-    public void SubscribeToOnGameStateChanged(GameStateManager.OnStateChangedHandler handler)
+    public void SubscribeToOnStateChanged(GameStateManager.OnStateChangedHandler handler)
     {
         gameStateManager.OnStateChanged += handler;
     }
-    public void UnsubscribeToOnGameStateChanged(GameStateManager.OnStateChangedHandler handler)
+    public void UnsubscribeToOnStateChanged(GameStateManager.OnStateChangedHandler handler)
     {
         gameStateManager.OnStateChanged -= handler;
     }
-    // Loading screen
-    IEnumerator SetNewStateAfter(GameStateManager.GameState newGameState, float seconds, bool enableLoadingScreen)
+    IEnumerator SetNewStateAfter(GameStateManager.GameState newGameState, float seconds, bool loadingScreenEnabled = true) // Loading screen
     {
-        if (enableLoadingScreen) loadingCanvas.SetActive(true);
+        if (loadingScreenEnabled) loadingCanvas.SetActive(true);
 
         yield return new WaitForSeconds(seconds);
         SetNewState(newGameState);
 
         loadingCanvas.SetActive(false);
-
-        Debug.Log(newGameState);
     }
     private void GameStateManager_OnStateChanged(GameStateManager.GameState gameState)
     {
         switch (gameState)
         {
-            case GameStateManager.GameState.MainMenu:
-                break;
-            case GameStateManager.GameState.New:
-                LoadLevel(1);
-                SetNewState(GameStateManager.GameState.Initializing);
-                break;
-            case GameStateManager.GameState.Resuming:
-                gameData = LoadData();
-                LoadGameManger(gameData.gameManagerData);
-
-                // If player wins last game, re-init new level and new game state
-                if (savedState == GameStateManager.GameState.Victorious)
-                {
-                    levelIndex += 1;
-                    savedState = GameStateManager.GameState.Preparing;
-                }
-
-                LoadLevel(levelIndex);
-                SetNewState(GameStateManager.GameState.Initializing);
-                break;
-            case GameStateManager.GameState.Initializing:
-                switch (previousGameState)
-                {
-                    case GameStateManager.GameState.New:
-                        StartCoroutine(SetNewStateAfter(GameStateManager.GameState.Preparing, sceneLoadingTime, true));
-                        InitializeGameManager();
-                        break;
-                    case GameStateManager.GameState.Resuming:
-                        StartCoroutine(SetNewStateAfter(savedState, sceneLoadingTime, true));
-                        InitializeGameManager();
-                        StartCoroutine(InitializeLevelAfter(sceneLoadingTime / 3));
-                        break;
-                }
-                break;
             case GameStateManager.GameState.Preparing:
-                if(CurrentState == GameStateManager.GameState.Pausing) UnPauseGame();
+                if(previousGameState == GameStateManager.GameState.Pausing) UnPauseGame();
                 break;
             case GameStateManager.GameState.Playing:
                 if (previousGameState == GameStateManager.GameState.Pausing) UnPauseGame();
                 break;
-            case GameStateManager.GameState.Pausing:
-                PauseGame();
-                break;
             case GameStateManager.GameState.Victorious:
                 Debug.Log("Victorious");
+                levelIndex++;
                 SaveData();
                 break;
             case GameStateManager.GameState.Lost:
@@ -136,9 +102,8 @@ public class GameManager : MonoBehaviour
 
 
     //########## Loading methods STARTS ##########
-    private GameData LoadData()
+    public void LoadData()
     {
-        GameData gameData = null;
         string path = Path.Combine(Application.persistentDataPath, "gamesave.dat");
         if (File.Exists(path))
         {
@@ -150,15 +115,21 @@ public class GameManager : MonoBehaviour
 
             Debug.Log("Loaded game from " + path);
         }
-
-        return gameData;
     }
     private void LoadAttackTurrets(List<AttackTurretData> attackTurretDatas)
     {
         foreach (AttackTurretData attackTurretData in attackTurretDatas)
         {
-            AttackTurret attackTurret = Instantiate(turretBlueprint.models[attackTurretData.id].turretPrefab, null).GetComponent<AttackTurret>();
+            AttackTurret attackTurret = Instantiate(BuildManager.turretBlueprints[attackTurretData.id].turretPrefab, null).GetComponent<AttackTurret>();
             attackTurretData.Load(attackTurret);
+        }
+    }
+    private void LoadSupportTurrets(List<SupportTurretData> supportTurretDatas)
+    {
+        foreach (SupportTurretData supportTurretData in supportTurretDatas)
+        {
+            SupportTurret supportkTurret = Instantiate(BuildManager.turretBlueprints[supportTurretData.id].turretPrefab, null).GetComponent<SupportTurret>();
+            supportTurretData.Load(supportkTurret);
         }
     }
     private void LoadNodes(List<NodeData> nodeDatas)
@@ -174,6 +145,7 @@ public class GameManager : MonoBehaviour
                     foreach (Turret turret in turrets)
                         if (turret.ID == nodeData.turretID)
                         {
+                            nodeData.Load(node);
                             node.SetTurret(turret);
                             break;
                         }
@@ -201,6 +173,7 @@ public class GameManager : MonoBehaviour
     private void SaveData()
     {
         List<AttackTurretData> attackTurretDatas = null;
+        List<SupportTurretData> supportTurretDatas = null;
         List<NodeData> nodeDatas = null;
         WaveManagerData waveManagerData = null;
 
@@ -208,6 +181,7 @@ public class GameManager : MonoBehaviour
         if (CurrentState != GameStateManager.GameState.Victorious)
         {
             attackTurretDatas = SaveAttackTurrets();
+            supportTurretDatas = SaveSupportTurrets();
             nodeDatas = SaveNodes();
             waveManagerData = SaveWaveManager();
         }
@@ -215,7 +189,7 @@ public class GameManager : MonoBehaviour
         GameManagerData gameManagerData = SaveGameManager();
         PlayerData playerData = SavePlayerStats();
         GameData gameData = new GameData();
-        gameData.Save(attackTurretDatas, nodeDatas, waveManagerData, gameManagerData, playerData);
+        gameData.Save(attackTurretDatas, supportTurretDatas, nodeDatas, waveManagerData, gameManagerData, playerData);
 
         string path = Path.Combine(Application.persistentDataPath, "gamesave.dat");
         FileStream file = File.Create(path);
@@ -236,6 +210,18 @@ public class GameManager : MonoBehaviour
             attackTurretDatas.Add(attackTurretData);
         }
         return attackTurretDatas;
+    }
+    private List<SupportTurretData> SaveSupportTurrets()
+    {
+        SupportTurret[] supportTurrets = FindObjectsOfType<SupportTurret>();
+        List<SupportTurretData> supportTurretDatas = new List<SupportTurretData>();
+        foreach (SupportTurret supportTurret in supportTurrets)
+        {
+            SupportTurretData supportTurretData = new SupportTurretData();
+            supportTurretData.Save(supportTurret);
+            supportTurretDatas.Add(supportTurretData);
+        }
+        return supportTurretDatas;
     }
     private List<NodeData> SaveNodes()
     {
@@ -272,14 +258,11 @@ public class GameManager : MonoBehaviour
 
 
     //########## Utility methods STARTS ##########
-    private void InitializeGameManager()
+    private IEnumerator InitializeGameManagerAfter(float seconds)
     {
+        yield return new WaitForSeconds(seconds);
+
         levelStats = Resources.Load<LevelStats>("LevelStats" + levelIndex);
-
-        // Subscribe to WaveManager events
-        WaveManager.OnStateChanged -= WaveManager_OnStateChanged;
-        WaveManager.OnStateChanged += WaveManager_OnStateChanged;
-
         playerStats = new PlayerStats();
         playerStats.LoadLevelStats(levelStats);
     }
@@ -288,6 +271,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(seconds);
 
         LoadAttackTurrets(gameData.attackTurretDatas);
+        LoadSupportTurrets(gameData.supportTurretDatas);
         LoadNodes(gameData.nodeDatas);
         LoadWaveManager(gameData.waveManagerData);
         LoadPlayerStats(gameData.playerData);
@@ -297,27 +281,76 @@ public class GameManager : MonoBehaviour
     {
         switch(waveState)
         {
-            case WaveManager.WaveState.Started:
-                break;
             case WaveManager.WaveState.Ended:
-                if (WaveManager.Instance.CurrentWaveIndex % autoSaveFrequency == 0) SaveData();
+                if (CurrentState != GameStateManager.GameState.Victorious 
+                    && CurrentState != GameStateManager.GameState.Lost
+                    && WaveManager.Instance.CurrentWaveIndex % autoSaveFrequency == 0) SaveData();
                 break;
             case WaveManager.WaveState.AllEnded:
                 SetNewState(GameStateManager.GameState.Victorious);
                 break;
         } 
     }
+    private void Exit_OnAttacked(Mob mob)
+    {
+        playerStats.lives -= mob.lifeDamage;
+
+        if (playerStats.lives <= 0)
+        {
+            playerStats.lives = 0;
+            SetNewState(GameStateManager.GameState.Lost);
+        }
+    }
+    private void Mob_OnDead(Mob mob)
+    {
+        playerStats.credits += mob.killCredits;
+        playerStats.researchPoints += mob.killResearchPoints;
+    }
     //########## Utility methods ENDS ##########
 
 
 
     //########## Game-flow control methods STARTS ##########
-    private void LoadLevel(int levelIndex)
+    public void LoadNewLevel()
     {
-        this.levelIndex = levelIndex;
+        levelIndex = 1;
         SceneManager.LoadScene(levelIndex);
+        StartCoroutine(SetNewStateAfter(GameStateManager.GameState.Preparing, sceneLoadingTime));
+        StartCoroutine(InitializeGameManagerAfter(sceneLoadingTime / 3));
     }
-    private void PauseGame()
+    public void LoadNextLevel() // Only called when victory
+    {
+        SceneManager.LoadScene(levelIndex);
+        StartCoroutine(SetNewStateAfter(GameStateManager.GameState.Preparing, sceneLoadingTime));
+        StartCoroutine(InitializeGameManagerAfter(sceneLoadingTime / 3));
+    }
+    public void LoadSavedLevel()
+    {
+        LoadData();
+        LoadGameManger(gameData.gameManagerData);
+        SceneManager.LoadScene(levelIndex);
+
+        // If player wins last game, re-init new game state
+        if (savedState == GameStateManager.GameState.Victorious) savedState = GameStateManager.GameState.Preparing;
+
+        StartCoroutine(SetNewStateAfter(savedState, sceneLoadingTime));
+        StartCoroutine(InitializeGameManagerAfter(sceneLoadingTime / 3));
+        StartCoroutine(InitializeLevelAfter(sceneLoadingTime / 2));
+    }
+    public void RestartLevel()
+    {
+        if (CurrentState == GameStateManager.GameState.Victorious) levelIndex--;
+
+        SceneManager.LoadScene(levelIndex);
+        StartCoroutine(SetNewStateAfter(GameStateManager.GameState.Preparing, sceneLoadingTime));
+        StartCoroutine(InitializeGameManagerAfter(sceneLoadingTime / 3));
+    }
+    public void LoadMainMenu()
+    {
+        SceneManager.LoadScene(0);
+        SetNewState(GameStateManager.GameState.MainMenu);
+    }
+    public void PauseGame(bool stateChangeEnabled = true)
     {
         Turret[] turrets = FindObjectsOfType<Turret>();
         Projectile[] projectiles = FindObjectsOfType<Projectile>();
@@ -330,8 +363,9 @@ public class GameManager : MonoBehaviour
         foreach (Node node in nodes) node.GetComponent<BoxCollider>().enabled = false;
 
         Time.timeScale = 0f;
+        if (stateChangeEnabled) SetNewState(GameStateManager.GameState.Pausing);
     }
-    private void UnPauseGame()
+    public void UnPauseGame(bool stateChangeEnabled = true)
     {
         Turret[] turrets = FindObjectsOfType<Turret>();
         Projectile[] projectiles = FindObjectsOfType<Projectile>();
@@ -344,6 +378,7 @@ public class GameManager : MonoBehaviour
         foreach (Node mob in nodes) mob.GetComponent<BoxCollider>().enabled = true;
 
         Time.timeScale = 1f;
+        if(stateChangeEnabled) SetNewState(previousGameState);
     }
     //########## Game-flow control methods ENDS ##########
 }

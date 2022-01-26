@@ -12,6 +12,10 @@ public class TopBar : MonoBehaviour
     private Button startWaveButton;
     [SerializeField]
     private TMP_Text totalWavesText;
+    [SerializeField]
+    private TMP_Text livesText;
+    [SerializeField]
+    private TMP_Text creditsText;
 
     private float topBarMaskGlowInitialWidth;
 
@@ -21,6 +25,8 @@ public class TopBar : MonoBehaviour
         WaveManager.OnStateChanged += WaveManager_OnStateChanged;
         GameManager.Instance.OnLevelInitialized += Instance_OnLevelInitialized;
         totalWavesText.text = string.Concat(new string[] { (WaveManager.Instance.CurrentWaveIndex + 1).ToString(), "/", WaveManager.Instance.totalWaves.ToString() });
+        livesText.text = GameManager.Instance.playerStats.lives.ToString();
+        creditsText.text = GameManager.Instance.playerStats.credits.ToString();
     }
 
     private void OnDestroy()
@@ -53,6 +59,8 @@ public class TopBar : MonoBehaviour
     {
         topBarMaskGlow.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 
             topBarMaskGlowInitialWidth * (WaveManager.Instance.WaveBreakCountdown / WaveManager.Instance.waveBreakDuration));
+        livesText.text = GameManager.Instance.playerStats.lives.ToString();
+        creditsText.text = GameManager.Instance.playerStats.credits.ToString();
     }
 
     public void StartWave()

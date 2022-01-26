@@ -12,22 +12,20 @@ public class AttackTurretData
     public float maxRange;
     public int level;
     public float[] position;
-    public float[] quarternion;
 
     public AttackTurretData()
     {
-        position = new float[3];
-        quarternion = new float[4];
+        position = new float[3]; 
     }
 
     public void Save(AttackTurret turret)
     {
         id = turret.ID;
-        damage = turret.attackTurretStats.damage;
-        explosionRadius = turret.attackTurretStats.explosionRadius;
-        fireCooldown = turret.attackTurretStats.fireCooldown;
-        minRange = turret.attackTurretStats.minRange;
-        maxRange = turret.attackTurretStats.maxRange;
+        damage = turret.turretStats.damage;
+        explosionRadius = turret.turretStats.explosionRadius;
+        fireCooldown = turret.turretStats.fireRate;
+        minRange = turret.turretStats.minRange;
+        maxRange = turret.turretStats.maxRange;
         level = turret.level;
 
         Vector3 turretPosition = turret.transform.position;
@@ -38,11 +36,11 @@ public class AttackTurretData
 
     public void Load(AttackTurret turret)
     {
-        turret.attackTurretStats.damage = damage;
-        turret.attackTurretStats.explosionRadius = explosionRadius;
-        turret.attackTurretStats.fireCooldown = fireCooldown;
-        turret.attackTurretStats.minRange = minRange;
-        turret.attackTurretStats.maxRange = maxRange;
+        turret.turretStats.damage = damage;
+        turret.turretStats.explosionRadius = explosionRadius;
+        turret.turretStats.fireRate = fireCooldown;
+        turret.turretStats.minRange = minRange;
+        turret.turretStats.maxRange = maxRange;
         for (int i = 0; i < level - 1; i++) turret.IncreaseLevel();
 
         Vector3 turretPosition = new Vector3(position[0], position[1], position[2]);

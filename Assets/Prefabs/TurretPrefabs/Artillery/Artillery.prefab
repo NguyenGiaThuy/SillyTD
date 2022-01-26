@@ -1,5 +1,100 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1203683419404746642
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 551566616387913615}
+  - component: {fileID: 9079212976153600283}
+  - component: {fileID: 2354164723370180530}
+  - component: {fileID: 5512416236024541614}
+  m_Layer: 0
+  m_Name: Aura
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &551566616387913615
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1203683419404746642}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.05, z: 0}
+  m_LocalScale: {x: 7, y: 0, z: 7}
+  m_Children: []
+  m_Father: {fileID: 5590759761990016717}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &9079212976153600283
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1203683419404746642}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &2354164723370180530
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1203683419404746642}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 243c6d6e3021d1b4c95b6ea6a2179be2, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!135 &5512416236024541614
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1203683419404746642}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2206610174808519978
 GameObject:
   m_ObjectHideFlags: 0
@@ -112,7 +207,7 @@ Transform:
   m_Children:
   - {fileID: 3435099057011987653}
   m_Father: {fileID: 3679388842461197532}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1539920390373138769
 MeshFilter:
@@ -192,7 +287,7 @@ Transform:
   m_Children:
   - {fileID: 338008990587518767}
   m_Father: {fileID: 3679388842461197532}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: -16, y: 0, z: 0}
 --- !u!1 &5106394565762745463
 GameObject:
@@ -205,7 +300,8 @@ GameObject:
   - component: {fileID: 5590759761990016717}
   - component: {fileID: 3622702964847313389}
   - component: {fileID: 3758894401346292421}
-  m_Layer: 0
+  - component: {fileID: 8904292984158760192}
+  m_Layer: 29
   m_Name: Artillery
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -225,6 +321,7 @@ Transform:
   m_Children:
   - {fileID: 5582967490646555427}
   - {fileID: 3679388842461197532}
+  - {fileID: 551566616387913615}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -241,7 +338,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   level: 1
-  data: {fileID: 0}
+  turretStats: {fileID: 0}
+  aura: {fileID: 1203683419404746642}
   searchInterval: 0.25
   rotationSpeed: 25
   partToRotatePrefab: {fileID: 8801245971907003502}
@@ -349,6 +447,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!65 &8904292984158760192
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5106394565762745463}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &5816336663421590662
 GameObject:
   m_ObjectHideFlags: 0
@@ -459,7 +570,7 @@ Transform:
   m_Children:
   - {fileID: 4239347265071903537}
   m_Father: {fileID: 3679388842461197532}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: -16, y: 0, z: 0}
 --- !u!1 &8801245971907003502
 GameObject:
@@ -488,9 +599,9 @@ Transform:
   m_LocalPosition: {x: -0, y: 0.7, z: -0.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 3835054438053179699}
   - {fileID: 6778494719286336645}
   - {fileID: 7401286403048139277}
-  - {fileID: 3835054438053179699}
   m_Father: {fileID: 5590759761990016717}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -575,6 +686,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: MuzzleFlash2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4461042784807832930, guid: de09b14387746c94c9ead373fe373a35,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4461355363967742152, guid: de09b14387746c94c9ead373fe373a35,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: de09b14387746c94c9ead373fe373a35, type: 3}
@@ -671,6 +792,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: MuzzleFlash1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4461042784807832930, guid: de09b14387746c94c9ead373fe373a35,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4461355363967742152, guid: de09b14387746c94c9ead373fe373a35,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: de09b14387746c94c9ead373fe373a35, type: 3}

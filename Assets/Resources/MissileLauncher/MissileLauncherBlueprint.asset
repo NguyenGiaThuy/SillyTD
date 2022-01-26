@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9ed1e75dc04fbc459ca4db8335a34bc, type: 3}
+  m_Name: MissileLauncherBlueprint
+  m_EditorClassIdentifier: 
+  id: 1
+  buildCost: 200
+  upgradeCosts: 00000000a0000000be000000dc000000
+  turretPrefab: {fileID: 6186987861751671330, guid: e230909320b9de742bcce831b5985edb,
+    type: 3}
