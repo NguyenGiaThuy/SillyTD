@@ -3,119 +3,91 @@ using UnityEngine;
 
 public class WaveSpawner : MonoBehaviour
 {
-    // Track the numbers of spawners
     public static int Counter { get; private set; } = 0;
-    // Track current countdown of all spawners (shared between spawners)
-    static public int CountDown { get; set; }
-
-    public delegate void OnStateChangedHandler(WaveSpawnerState waveSpawnerState);
-    public event OnStateChangedHandler StateChanged;
-
-    public enum WaveSpawnerState
-    {
-        Null,
-        Inactive,
-        Active
-    }
-
-    public WaveSpawnerState CurrentState { get; private set; }
-    public int CurrentWaveIndex { get; set; }
 
     [Header("Game Specifications", order = 0)]
     [SerializeField]
-    private float timeBetweenWaves;
+    private int spawnAtWave;
     [SerializeField]
-    private float timeBetweenGroups;
+    private int stopAtWave;
     [SerializeField]
-    private float timeBetweenUnits;
+    private float startAfter;
+    [SerializeField]
+    private int spawnFrequency;
     [SerializeField]
     private int unitsPerWave;
     [SerializeField]
     private int unitsPerGroup;
-    
+
     [Header("Unity Specifications", order = 0)]
     [SerializeField]
-    private GameObject[] mobPrefabs;
+    private GameObject mobPrefab;
     [SerializeField]
     private WayPoints wayPoints;
-    [SerializeField]
-    private int autoSaveModifier;
-
-    private void Awake()
-    {
-        GameManager.Instance.SubscribeToGameStateChanged(GameManager_StateChanged);
-    }
 
     private void Start()
     {
-        CurrentWaveIndex = 0;
+        WaveManager.OnStateChanged += WaveSpawner_OnWaveStateChangedChanged;
+    }
+
+    private void WaveSpawner_OnWaveStateChangedChanged(WaveManager.WaveState waveState)
+    { 
+        switch(waveState)
+        {
+            case WaveManager.WaveState.Started:
+                if(spawnAtWave - 1 == WaveManager.Instance.CurrentWaveIndex || 
+                    (WaveManager.Instance.CurrentWaveIndex != 0 
+                    && WaveManager.Instance.CurrentWaveIndex % spawnFrequency == 0
+                    && stopAtWave - 1 <= WaveManager.Instance.CurrentWaveIndex)) 
+                    StartCoroutine(Spawn());
+                break;
+            case WaveManager.WaveState.Ended:
+                break;
+            case WaveManager.WaveState.AllEnded:
+                break;
+        }
     }
 
     private void OnDestroy()
     {
-        GameManager.Instance.UnsubscribeToGameStateChanged(GameManager_StateChanged);
+        WaveManager.OnStateChanged -= WaveSpawner_OnWaveStateChangedChanged;
     }
 
-    public void SetNewState(WaveSpawnerState newWaveSpawnerState)
-    {
-        if (CurrentState == newWaveSpawnerState) return;
-
-        CurrentState = newWaveSpawnerState;
-        StateChanged?.Invoke(newWaveSpawnerState);
-    }
-
+    // Spawn every wave
     private IEnumerator Spawn()
     {
+        yield return new WaitForSeconds(startAfter);
+
         Counter++;
-        CountDown = Mathf.RoundToInt(timeBetweenWaves);
-        SetNewState(WaveSpawnerState.Active);
 
-        // Begin spawning
-        while (CurrentWaveIndex < mobPrefabs.Length)
+        float timeBetweenUnits = WaveManager.Instance.waveDuration / unitsPerWave;
+        float timeBetweenUnitsInGroup = timeBetweenUnits / unitsPerGroup;
+        float groupDuration = (unitsPerGroup - 1) * timeBetweenUnitsInGroup;
+        int groupsPerWave = unitsPerWave / unitsPerGroup;
+        float timeBetweenGroups = (WaveManager.Instance.waveDuration - groupDuration * groupsPerWave) / (groupsPerWave - 1);
+
+        int currentUnitsPerWave = unitsPerWave;
+        while (currentUnitsPerWave > 0)
         {
-            // Spawn mobs according to timing
-            int currentUnitsPerWave = unitsPerWave;
-            while (currentUnitsPerWave > 0)
-            {
-                // Spawn and notify to subscribers
-                Mob spawnedMob = Instantiate(mobPrefabs[CurrentWaveIndex], transform.position, transform.rotation).GetComponent<Mob>();
-                spawnedMob.SetPath(wayPoints);
-                currentUnitsPerWave--;
+            // Spawn
+            Mob spawnedMob = Instantiate(mobPrefab, transform.position, transform.rotation).GetComponent<Mob>();
+            spawnedMob.SetPath(wayPoints);
 
-                if (currentUnitsPerWave % unitsPerGroup == 0) 
-                    yield return new WaitForSeconds(timeBetweenGroups);
-                else 
-                    yield return new WaitForSeconds(timeBetweenUnits);
-            }
+            currentUnitsPerWave--;
+            if(currentUnitsPerWave == 0) break;
 
-            // Wait for the last mob to disappear
-             yield return new WaitWhile(() => { return Mob.Counter != 0; });
-
-            //Auto-save
-            CurrentWaveIndex++;
-            if (CurrentWaveIndex % autoSaveModifier == 0) GameManager.Instance.SetNewState(GameStateManager.GameState.Saving);
-
-            // End coroutine if the last wave ends
-            if (CurrentWaveIndex == mobPrefabs.Length) 
-            {
-                Counter--;
-                SetNewState(WaveSpawnerState.Inactive);
-                yield break; 
-            }
-
-            // Countdown next wave
-            while (CountDown > 0)
-            {
-                yield return new WaitForSeconds(1f);
-                CountDown--;
-            }
+            float timeToWait = timeBetweenUnitsInGroup;
+            // Wait for groups/units to spawn
+            if (currentUnitsPerWave % unitsPerGroup == 0) timeToWait = timeBetweenGroups;
+            yield return new WaitForSeconds(timeToWait);
         }
-    }
 
-    
-    private void GameManager_StateChanged(GameStateManager.GameState gameState)
-    {
-        // Only called once at the beginning of the game
-        if (gameState == GameStateManager.GameState.Playing && CurrentState != WaveSpawnerState.Active) StartCoroutine(Spawn());
+        yield return new WaitUntil(() => { return Mob.Counter == 0; });
+        Counter--;
+        if (Counter == 0)
+        {
+            yield return new WaitForSeconds(1f);
+            WaveManager.Instance.SetNewState(WaveManager.WaveState.Ended);
+        }
     }
 }

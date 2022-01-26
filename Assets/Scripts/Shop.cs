@@ -1,29 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Shop : MonoBehaviour
 {
-    public TurretBlueprint turretBlueprint;
+    public int SellCredits { get; private set; }
+    public float SellMultiplier { get; private set; }
 
     // Hidden fields
-    private float sellMultiplier;
     BuildManager buildManager;
 
     private void Awake() 
     {
         buildManager = FindObjectOfType<BuildManager>();
-        GameManager.Instance.SubscribeToGameStateChanged(GameManager_OnStateChanged);
+        GameManager.Instance.SubscribeToOnStateChanged(GameManager_OnStateChanged);
     }
 
     private void OnDestroy()
     {
-        GameManager.Instance.UnsubscribeToGameStateChanged(GameManager_OnStateChanged);
+        GameManager.Instance.UnsubscribeToOnStateChanged(GameManager_OnStateChanged);
     }
 
     public void PurchaseTurret(int turretID) 
     {
-        TurretBlueprint.Model model = turretBlueprint.models[turretID];
+        TurretBlueprint model = BuildManager.turretBlueprints[turretID];
 
         if (GameManager.Instance.playerStats.credits < model.buildCost)
         {
@@ -32,13 +30,14 @@ public class Shop : MonoBehaviour
         }
 
         GameManager.Instance.playerStats.credits -= model.buildCost;
+        SellCredits = model.buildCost;
         buildManager.BuildTurret(model);
 
     }
 
     public void UpgradeTurret()
     {
-        TurretBlueprint.Model model = turretBlueprint.models[buildManager.CurrentTurret.ID];
+        TurretBlueprint model = BuildManager.turretBlueprints[buildManager.CurrentTurret.ID];
         int nextLevel = buildManager.CurrentTurret.level;
 
         if(nextLevel >= model.upgradeCosts.Length)
@@ -54,22 +53,19 @@ public class Shop : MonoBehaviour
         }
 
         GameManager.Instance.playerStats.credits -= model.upgradeCosts[nextLevel];
+        SellCredits += model.upgradeCosts[nextLevel];
         buildManager.UpgradeTurret();
     }
 
     public void SellTurret()
     {
-        TurretBlueprint.Model model = turretBlueprint.models[buildManager.CurrentTurret.ID];
-        int currentLevel = buildManager.CurrentTurret.level - 1;
-        int totalUpgradeCost = 0;
-        for (int i = 1; i <= currentLevel; i++) totalUpgradeCost += model.upgradeCosts[i];
-        GameManager.Instance.playerStats.credits += Mathf.RoundToInt(sellMultiplier * (model.buildCost + totalUpgradeCost));
+        GameManager.Instance.playerStats.credits += Mathf.RoundToInt(SellMultiplier * SellCredits);
         buildManager.DemolishTurret();
     }
 
     private void GameManager_OnStateChanged(GameStateManager.GameState gameState)
     {
-        if (gameState == GameStateManager.GameState.Preparing) sellMultiplier = 1f;
-        else sellMultiplier = 0.5f;
+        if (gameState == GameStateManager.GameState.Preparing) SellMultiplier = 1f;
+        else SellMultiplier = 0.5f;
     }
 }

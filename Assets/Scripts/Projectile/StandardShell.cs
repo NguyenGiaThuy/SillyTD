@@ -5,7 +5,7 @@ public class StandardShell : Projectile
     protected override int GetFinalDamge()
     {
         // Calculate damage for each armor type
-        float finalDamage = sourceTurret.stats.damage;
+        float finalDamage = sourceTurret.turretStats.damage;
         switch (target.armor)
         {
             case Mob.ArmorType.Light:

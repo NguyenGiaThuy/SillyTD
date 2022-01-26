@@ -8,7 +8,7 @@ public class GameManagerData
 
     public void Save(GameManager gameManager)
     {
-        gameState = gameManager.previousGameState;
+        gameState = gameManager.CurrentState;
         levelIndex = gameManager.levelIndex;
     }
 

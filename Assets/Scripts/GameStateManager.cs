@@ -3,15 +3,11 @@ using UnityEngine;
 public class GameStateManager
 {
     public delegate void OnStateChangedHandler(GameState gameState);
-    public event OnStateChangedHandler StateChanged;
+    public event OnStateChangedHandler OnStateChanged;
 
     public enum GameState
     {
         MainMenu,
-        New,
-        Resuming,
-        Saving,
-        Initializing,
         Preparing,
         Playing,
         Pausing,
@@ -20,11 +16,6 @@ public class GameStateManager
     }
 
     public GameState CurrentState { get; private set; }
-
-    public delegate void OnLostHandler();
-    public event OnLostHandler Lost;
-    public delegate void OnVictoriousHandler();
-    public event OnVictoriousHandler Victorious;
 
     public GameStateManager()
     {
@@ -36,6 +27,6 @@ public class GameStateManager
         if (newGameState == CurrentState) return;
 
         CurrentState = newGameState;
-        StateChanged?.Invoke(newGameState);
+        OnStateChanged?.Invoke(newGameState);
     }
 }

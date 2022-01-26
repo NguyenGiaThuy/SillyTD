@@ -1,26 +1,20 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class AttackTurret : Turret
 {
-    public delegate void OnStateChangedHandler(TurretState newGameState);
-    public event OnStateChangedHandler StateChanged;
+    public delegate void OnStateChangedHandler(TurretState turretState);
+    public event OnStateChangedHandler OnStateChanged;
 
     public enum TurretState
     {
-        Null,
         Idling,
         Rotating,
         Firing,
     }
 
-    public TurretState State { get; private set; }
-
-    //[Header("Game Specifications", order = 0)]
-    //[Header("Optional", order = 1)]
-    //public int level;
-    [Header("Mandatory", order = 1)]
-    public AttackTurretStats stats;
+    public TurretState CurrentState { get; private set; }
 
     [Header("Unity Specifications", order = 0)]
     [Header("Optional", order = 1)]
@@ -47,15 +41,15 @@ public abstract class AttackTurret : Turret
 
     private void Start()
     {
-        fireCountdown = stats.fireCooldown - 1f;
-        SetState(TurretState.Idling);
+        fireCountdown = turretStats.fireRate - 1f;
+        SetNewState(TurretState.Idling);
         StartCoroutine(SearchTarget());
         audioSource = GetComponent<AudioSource>();
     }
 
     private void Update()
     {
-        switch (State)
+        switch (CurrentState)
         {
             case TurretState.Idling:
                 Idle();
@@ -69,21 +63,21 @@ public abstract class AttackTurret : Turret
         }
 
         // Reload
-        if (fireCountdown <= stats.fireCooldown) fireCountdown += Time.deltaTime;
+        if (fireCountdown <= turretStats.fireRate) fireCountdown += Time.deltaTime;
     }
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.DrawWireSphere(transform.position, stats.minRange);
-        Gizmos.DrawWireSphere(transform.position, stats.maxRange);
+        Gizmos.DrawWireSphere(transform.position, turretStats.minRange);
+        Gizmos.DrawWireSphere(transform.position, turretStats.maxRange);
     }
 
-    protected void SetState(TurretState turretState)
+    protected void SetNewState(TurretState newTurretState)
     {
-        if (turretState == State) return;
+        if (newTurretState == CurrentState) return;
 
-        State = turretState;
-        StateChanged?.Invoke(turretState);
+        CurrentState = newTurretState;
+        OnStateChanged?.Invoke(newTurretState);
     }
 
     private IEnumerator SearchTarget()
@@ -92,18 +86,17 @@ public abstract class AttackTurret : Turret
         while (true)
         {
             // If target is out of range, search new target
-            if (target == null || Vector3.Distance(transform.position, target.transform.position) > stats.maxRange 
-                || Vector3.Distance(transform.position, target.transform.position) < stats.minRange)
+            if (target == null || Vector3.Distance(transform.position, target.transform.position) > turretStats.maxRange 
+                || Vector3.Distance(transform.position, target.transform.position) < turretStats.minRange)
             {
                 // Search for ground and flying mobs
                 GameObject[] groundMobs = GameObject.FindGameObjectsWithTag("GroundMob");
                 GameObject[] flyingMobs = GameObject.FindGameObjectsWithTag("FlyingMob");
 
                 // Combine ground and flying mobs into targets list
-                Mob[] mobs = new Mob[groundMobs.Length + flyingMobs.Length];
-                int i = 0;
-                foreach (GameObject groundMob in groundMobs) mobs[i++] = groundMob.GetComponent<Mob>();
-                if (canAntiAir) foreach (GameObject flyingMob in flyingMobs) mobs[i++] = flyingMob.GetComponent<Mob>();
+                List<Mob> mobs = new List<Mob>();
+                foreach (GameObject groundMob in groundMobs) mobs.Add(groundMob.GetComponent<Mob>());
+                if (canAntiAir) foreach (GameObject flyingMob in flyingMobs) mobs.Add(flyingMob.GetComponent<Mob>());
 
                 target = GetClosestTargetFromDestination(mobs);
             }
@@ -112,7 +105,7 @@ public abstract class AttackTurret : Turret
         }
     }
 
-    private Mob GetClosestTargetFromDestination(Mob[] mobs)
+    private Mob GetClosestTargetFromDestination(List<Mob> mobs)
     {
         Mob closestTargetFromEndPoint = null;
         float closestDistanceFromEndPoint = float.PositiveInfinity;
@@ -122,8 +115,8 @@ public abstract class AttackTurret : Turret
             float targetDistance = Vector3.Distance(transform.position, mob.transform.position);
             float targetDistanceFromEndPoint = mob.GetCurrentPathLength();
 
-            if (targetDistance <= stats.maxRange 
-                && targetDistance >= stats.minRange 
+            if (targetDistance <= turretStats.maxRange 
+                && targetDistance >= turretStats.minRange 
                 && targetDistanceFromEndPoint < closestDistanceFromEndPoint)
             {
                 closestTargetFromEndPoint = mob;
@@ -136,14 +129,14 @@ public abstract class AttackTurret : Turret
 
     private void Idle()
     {
-        if (target != null) SetState(TurretState.Rotating);
+        if (target != null) SetNewState(TurretState.Rotating);
     }
 
     private void Rotate()
     {
         if (target == null)
         {
-            SetState(TurretState.Idling);
+            SetNewState(TurretState.Idling);
             return;
         }
 
@@ -154,19 +147,19 @@ public abstract class AttackTurret : Turret
         partToRotatePrefab.transform.rotation = Quaternion.RotateTowards(partToRotatePrefab.transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
 
         // Done rotation
-        if (Quaternion.Angle(partToRotatePrefab.transform.rotation, Quaternion.LookRotation(direction)) <= 10f) SetState(TurretState.Firing);
+        if (Quaternion.Angle(partToRotatePrefab.transform.rotation, Quaternion.LookRotation(direction)) <= 10f) SetNewState(TurretState.Firing);
     }
 
     private void Fire()
     {
         if (target == null)
         {
-            SetState(TurretState.Idling);
+            SetNewState(TurretState.Idling);
             return;
         }
 
         // Fire if reloaded
-        if (fireCountdown > stats.fireCooldown)
+        if (fireCountdown > turretStats.fireRate)
         {
             audioSource.Play();
 
@@ -181,6 +174,6 @@ public abstract class AttackTurret : Turret
             fireCountdown = 0f;
         }
 
-        SetState(TurretState.Rotating);
+        SetNewState(TurretState.Rotating);
     }
 }

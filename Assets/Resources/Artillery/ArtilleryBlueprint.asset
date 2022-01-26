@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9ed1e75dc04fbc459ca4db8335a34bc, type: 3}
+  m_Name: ArtilleryBlueprint
+  m_EditorClassIdentifier: 
+  id: 2
+  buildCost: 400
+  upgradeCosts: 000000002c01000068010000a4010000
+  turretPrefab: {fileID: 5106394565762745463, guid: ec8c85d98c2075f48bf079c6f13643b2,
+    type: 3}
