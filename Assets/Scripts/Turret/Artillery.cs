@@ -6,17 +6,20 @@ public class Artillery : AttackTurret
     {
         ID = 2;
         canAntiAir = false;
-        attackTurretStats = Resources.Load<AttackTurretStats>("ArtilleryStats/ArtilleryStats" + level);
-        LevelIncreased += Artillery_LevelIncreased;
+        turretStats = Resources.Load<TurretStats>("Artillery/ArtilleryStats" + level);
+        OnLevelIncreased += Artillery_OnLevelIncreased;
     }
 
     private void OnDestroy()
     {
-        LevelIncreased -= Artillery_LevelIncreased;
+        OnLevelIncreased -= Artillery_OnLevelIncreased;
     }
 
-    private void Artillery_LevelIncreased()
+    private void Artillery_OnLevelIncreased()
     {
-        attackTurretStats = Resources.Load<AttackTurretStats>("ArtilleryStats/ArtilleryStats" + level);
+        turretStats = Resources.Load<TurretStats>("Artillery/ArtilleryStats" + level);
+        transform.GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("Artillery/Material" + level);
+        transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("Artillery/Material" + level);
+        transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("Artillery/Material" + level);
     }
 }

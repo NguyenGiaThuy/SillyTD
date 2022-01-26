@@ -13,7 +13,7 @@ public class WaveSpawner : MonoBehaviour
     [SerializeField]
     private float startAfter;
     [SerializeField]
-    private int frequency;
+    private int spawnFrequency;
     [SerializeField]
     private int unitsPerWave;
     [SerializeField]
@@ -37,8 +37,8 @@ public class WaveSpawner : MonoBehaviour
             case WaveManager.WaveState.Started:
                 if(spawnAtWave - 1 == WaveManager.Instance.CurrentWaveIndex || 
                     (WaveManager.Instance.CurrentWaveIndex != 0 
-                    && WaveManager.Instance.CurrentWaveIndex % frequency == 0
-                    && stopAtWave - 1 != WaveManager.Instance.CurrentWaveIndex)) 
+                    && WaveManager.Instance.CurrentWaveIndex % spawnFrequency == 0
+                    && stopAtWave - 1 <= WaveManager.Instance.CurrentWaveIndex)) 
                     StartCoroutine(Spawn());
                 break;
             case WaveManager.WaveState.Ended:
@@ -84,6 +84,10 @@ public class WaveSpawner : MonoBehaviour
 
         yield return new WaitUntil(() => { return Mob.Counter == 0; });
         Counter--;
-        if (Counter == 0) WaveManager.Instance.SetNewState(WaveManager.WaveState.Ended);
+        if (Counter == 0)
+        {
+            yield return new WaitForSeconds(1f);
+            WaveManager.Instance.SetNewState(WaveManager.WaveState.Ended);
+        }
     }
 }

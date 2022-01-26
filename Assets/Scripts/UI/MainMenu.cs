@@ -4,12 +4,12 @@ public class MainMenu : MonoBehaviour
 {
     public void Resume()
     {
-        GameManager.Instance.SetNewState(GameStateManager.GameState.Resuming);
+        GameManager.Instance.LoadSavedLevel();
     }
 
     public void NewGame()
     {
-        GameManager.Instance.SetNewState(GameStateManager.GameState.New);
+        GameManager.Instance.LoadNewLevel();
     }
 
     public void Glossary()

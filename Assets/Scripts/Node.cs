@@ -3,9 +3,13 @@ using UnityEngine.EventSystems;
 
 public class Node : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IPointerExitHandler
 {
+    public delegate void OnMouseDownHandler(Node node);
+    public static event OnMouseDownHandler OnMouseDown;
+
     public bool Empty { get { return turret == null; } }
 
     public Turret turret;
+    public int sellCredits;
     public int turretID;
     [SerializeField]
     private Color hoverColor;
@@ -16,16 +20,47 @@ public class Node : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IP
     private NodeUI nodeUI;
     private BuildManager buildManager;
     private GameObject informationPanel;
+    private Shop shop;
 
     private void Start()
     {
-        buildManager = FindObjectOfType<BuildManager>();
+        shop = FindObjectOfType<Shop>();
+
         nodeRenderer = GetComponent<Renderer>();
         initialColor = nodeRenderer.material.color;
+
+        buildManager = FindObjectOfType<BuildManager>();
+        BuildManager.OnBuilt += BuildManager_OnBuilt;
+        BuildManager.OnUpgraded += BuildManager_OnUpgraded;
+        BuildManager.OnDemolished += BuildManager_OnDemolished;
+
         nodeUI = FindObjectOfType<NodeUI>();
-        nodeUI.ModificationPanelShowed += NodeUI_ModificationPanelShowed;
-        nodeUI.PanelHidden += NodeUI_PanelHidden;
+        NodeUI.OnModificationPanelShowed += NodeUI_ModificationPanelShowed;
+        NodeUI.OnPanelHidden += NodeUI_PanelHidden;
+
         informationPanel = GameObject.Find("InformationCanvas").transform.GetChild(0).gameObject;
+
+        GameManager.Instance.SubscribeToOnStateChanged(GameManager_OnStateChanged);
+    }
+
+    private void GameManager_OnStateChanged(GameStateManager.GameState gameState)
+    {
+        if (gameState == GameStateManager.GameState.Playing) sellCredits = Mathf.RoundToInt(shop.SellMultiplier * sellCredits);
+    }
+
+    private void BuildManager_OnDemolished(Node demolishedNode)
+    {
+        if (demolishedNode == this) sellCredits = 0;
+    }
+
+    private void BuildManager_OnUpgraded(Node upgradedNode)
+    {
+        if (upgradedNode == this) sellCredits = Mathf.RoundToInt(shop.SellMultiplier * shop.SellCredits);
+    }
+
+    private void BuildManager_OnBuilt(Node builtNode)
+    {
+        if (builtNode == this) sellCredits = Mathf.RoundToInt(shop.SellMultiplier * shop.SellCredits); 
     }
 
     private void NodeUI_ModificationPanelShowed()
@@ -35,8 +70,14 @@ public class Node : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IP
 
     private void OnDestroy()
     {
-        nodeUI.ModificationPanelShowed -= NodeUI_ModificationPanelShowed;
-        nodeUI.PanelHidden -= NodeUI_PanelHidden;
+        BuildManager.OnBuilt -= BuildManager_OnBuilt;
+        BuildManager.OnUpgraded -= BuildManager_OnUpgraded;
+        BuildManager.OnDemolished -= BuildManager_OnDemolished;
+
+        NodeUI.OnModificationPanelShowed -= NodeUI_ModificationPanelShowed;
+        NodeUI.OnPanelHidden -= NodeUI_PanelHidden;
+
+        GameManager.Instance.UnsubscribeToOnStateChanged(GameManager_OnStateChanged);
     }
 
     private void NodeUI_PanelHidden()
@@ -56,6 +97,7 @@ public class Node : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IP
             buildManager.selectedNode = this;
             informationPanel.SetActive(false);
             nodeUI.ShowPanel(this);
+            OnMouseDown?.Invoke(this);
         }
     }
 

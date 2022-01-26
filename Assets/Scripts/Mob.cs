@@ -4,6 +4,9 @@ public class Mob : MonoBehaviour
 {
     public static int Counter { get; private set; } = 0;
 
+    public delegate void OnDeadHandler(Mob mob);
+    public static OnDeadHandler OnDead;
+
     public enum ArmorType {
         Light,
         Medium,
@@ -33,8 +36,6 @@ public class Mob : MonoBehaviour
     private void FixedUpdate()
     {
         transform.Translate(nextDirection.normalized * movementSpeed * Time.deltaTime, Space.World);
-        //Quaternion lookRotation = Quaternion.LookRotation(nextDirection);
-        //transform.rotation = Quaternion.SlerpUnclamped(transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
 
         // If destination is reached, find next destination 
         Transform nextWayPoint = wayPointsToMove[nextWayPointIndex];
@@ -92,7 +93,8 @@ public class Mob : MonoBehaviour
         if (healthPoints <= 0) {
             // Play animation
             // Play sound effect
-            Destroy(gameObject);
+            OnDead?.Invoke(this);
+            Destroy(gameObject, 0.5f);
         }
     }
 }

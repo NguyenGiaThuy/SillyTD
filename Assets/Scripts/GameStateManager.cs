@@ -8,9 +8,6 @@ public class GameStateManager
     public enum GameState
     {
         MainMenu,
-        New,
-        Resuming,
-        Initializing,
         Preparing,
         Playing,
         Pausing,
@@ -19,11 +16,6 @@ public class GameStateManager
     }
 
     public GameState CurrentState { get; private set; }
-
-    public delegate void OnLostHandler();
-    public event OnLostHandler Lost;
-    public delegate void OnVictoriousHandler();
-    public event OnVictoriousHandler Victorious;
 
     public GameStateManager()
     {

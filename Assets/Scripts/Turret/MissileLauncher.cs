@@ -6,17 +6,20 @@ public class MissileLauncher : AttackTurret
     {
         ID = 1;
         canAntiAir = true;
-        attackTurretStats = Resources.Load<AttackTurretStats>("MissileLauncherStats/MissileLauncherStats" + level);
-        LevelIncreased += MissileLauncher_LevelIncreased;
+        turretStats = Resources.Load<TurretStats>("MissileLauncher/MissileLauncherStats" + level);
+        OnLevelIncreased += MissileLauncher_OnLevelIncreased;
     }
 
     private void OnDestroy()
     {
-        LevelIncreased -= MissileLauncher_LevelIncreased;
+        OnLevelIncreased -= MissileLauncher_OnLevelIncreased;
     }
 
-    private void MissileLauncher_LevelIncreased()
+    private void MissileLauncher_OnLevelIncreased()
     {
-        attackTurretStats = Resources.Load<AttackTurretStats>("MissileLauncherStats/MissileLauncherStats" + level);
+        turretStats = Resources.Load<TurretStats>("MissileLauncher/MissileLauncherStats" + level);
+        transform.GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("MissileLauncher/Material" + level);
+        transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("MissileLauncher/Material" + level);
+        transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("MissileLauncher/Material" + level);
     }
 }

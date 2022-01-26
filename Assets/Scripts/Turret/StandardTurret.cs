@@ -6,17 +6,20 @@ public class StandardTurret : AttackTurret
     {
         ID = 0;
         canAntiAir = true;
-        attackTurretStats = Resources.Load<AttackTurretStats>("StandardTurretStats/StandardTurretStats" + level);
-        LevelIncreased += StandardTurret_LevelIncreased;
+        turretStats = Resources.Load<TurretStats>("StandardTurret/StandardTurretStats" + level);
+        OnLevelIncreased += StandardTurret_OnLevelIncreased;
     }
 
     private void OnDestroy()
     {
-        LevelIncreased -= StandardTurret_LevelIncreased;
+        OnLevelIncreased -= StandardTurret_OnLevelIncreased;
     }
 
-    private void StandardTurret_LevelIncreased()
+    private void StandardTurret_OnLevelIncreased()
     {
-        attackTurretStats = Resources.Load<AttackTurretStats>("StandardTurretStats/StandardTurretStats" + level);
+        turretStats = Resources.Load<TurretStats>("StandardTurret/StandardTurretStats" + level);
+        transform.GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("StandardTurret/Material" + level);
+        transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("StandardTurret/Material" + level);
+        transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("StandardTurret/Material" + level);
     }
 }
