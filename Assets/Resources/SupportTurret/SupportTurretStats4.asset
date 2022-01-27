@@ -16,4 +16,4 @@ MonoBehaviour:
   explosionRadius: 1
   fireRate: 1
   minRange: 0
-  maxRange: 16
+  maxRange: 24

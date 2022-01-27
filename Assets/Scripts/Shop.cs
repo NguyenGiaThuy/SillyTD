@@ -12,11 +12,18 @@ public class Shop : MonoBehaviour
     {
         buildManager = FindObjectOfType<BuildManager>();
         GameManager.Instance.SubscribeToOnStateChanged(GameManager_OnStateChanged);
+        Node.OnMouseDown += Node_OnMouseDown;
+    }
+
+    private void Node_OnMouseDown(Node node)
+    {
+        SellCredits = node.sellCredits;
     }
 
     private void OnDestroy()
     {
-        GameManager.Instance.UnsubscribeToOnStateChanged(GameManager_OnStateChanged);
+        GameManager.Instance.UnsubscribeToOnStateChanged(GameManager_OnStateChanged); 
+        Node.OnMouseDown -= Node_OnMouseDown;
     }
 
     public void PurchaseTurret(int turretID) 

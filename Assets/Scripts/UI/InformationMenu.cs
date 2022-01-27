@@ -54,6 +54,7 @@ public class InformationMenu : MonoBehaviour
     {
         BuildButton.OnHovered -= BuildButton_OnHovered;
         Node.OnMouseDown -= Node_OnMouseDown;
+        GameManager.Instance.UnsubscribeToOnStateChanged(GameManager_OnStateChanged);
     }
 
     private void GameManager_OnStateChanged(GameStateManager.GameState gameState)
@@ -105,7 +106,14 @@ public class InformationMenu : MonoBehaviour
                 rangeMaskGreen.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
                     rangeMaskInitialWidth * (informationStats.turretStats[node.turret.level].maxRange / maxRange));
             }
-            else cost.text = null;
+            else
+            {
+                cost.text = null;
+
+                damageMaskGreen.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, damageMaskWhite.rectTransform.rect.width);
+                fireRateMaskGreen.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, fireRateMaskWhite.rectTransform.rect.width);
+                rangeMaskGreen.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, rangeMaskWhite.rectTransform.rect.width);
+            }
         }
     }
 

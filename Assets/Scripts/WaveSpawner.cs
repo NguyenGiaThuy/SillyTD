@@ -18,6 +18,8 @@ public class WaveSpawner : MonoBehaviour
     private int unitsPerWave;
     [SerializeField]
     private int unitsPerGroup;
+    [SerializeField]
+    private float timeScale;
 
     [Header("Unity Specifications", order = 0)]
     [SerializeField]
@@ -27,18 +29,20 @@ public class WaveSpawner : MonoBehaviour
 
     private void Start()
     {
-        WaveManager.OnStateChanged += WaveSpawner_OnWaveStateChangedChanged;
+        WaveManager.OnStateChanged += WaveSpawner_OnStateChangedChanged;
     }
 
-    private void WaveSpawner_OnWaveStateChangedChanged(WaveManager.WaveState waveState)
-    { 
-        switch(waveState)
+    private void WaveSpawner_OnStateChangedChanged(WaveManager.WaveState waveState)
+    {
+        Debug.Log(WaveManager.Instance.CurrentWaveIndex);
+
+        switch (waveState)
         {
             case WaveManager.WaveState.Started:
-                if(spawnAtWave - 1 == WaveManager.Instance.CurrentWaveIndex || 
-                    (WaveManager.Instance.CurrentWaveIndex != 0 
+                if (spawnAtWave - 1 == WaveManager.Instance.CurrentWaveIndex ||
+                    (WaveManager.Instance.CurrentWaveIndex != 0
                     && WaveManager.Instance.CurrentWaveIndex % spawnFrequency == 0
-                    && stopAtWave - 1 <= WaveManager.Instance.CurrentWaveIndex)) 
+                    && stopAtWave > WaveManager.Instance.CurrentWaveIndex))
                     StartCoroutine(Spawn());
                 break;
             case WaveManager.WaveState.Ended:
@@ -50,7 +54,7 @@ public class WaveSpawner : MonoBehaviour
 
     private void OnDestroy()
     {
-        WaveManager.OnStateChanged -= WaveSpawner_OnWaveStateChangedChanged;
+        WaveManager.OnStateChanged -= WaveSpawner_OnStateChangedChanged;
     }
 
     // Spawn every wave
@@ -60,7 +64,7 @@ public class WaveSpawner : MonoBehaviour
 
         Counter++;
 
-        float timeBetweenUnits = WaveManager.Instance.waveDuration / unitsPerWave;
+        float timeBetweenUnits = WaveManager.Instance.waveDuration / unitsPerWave / timeScale;
         float timeBetweenUnitsInGroup = timeBetweenUnits / unitsPerGroup;
         float groupDuration = (unitsPerGroup - 1) * timeBetweenUnitsInGroup;
         int groupsPerWave = unitsPerWave / unitsPerGroup;

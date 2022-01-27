@@ -13,7 +13,8 @@ public class SupportTurret : Turret
     private void Awake()
     {
         ID = 3;
-        turretStats = Resources.Load<TurretStats>("SupportTurret/SupportTurretStats" + level);
+        turretStats = ScriptableObject.CreateInstance<TurretStats>();
+        turretStats.CopyFrom(Resources.Load<TurretStats>("SupportTurret/SupportTurretStats" + level));
         StartCoroutine(BuffNearbyTurrets());
         OnLevelIncreased += SupportTurret_OnLevelIncreased;
     }
@@ -33,7 +34,7 @@ public class SupportTurret : Turret
 
     private void SupportTurret_OnLevelIncreased()
     {
-        turretStats = Resources.Load<TurretStats>("SupportTurret/SupportTurretStats" + level);
+        turretStats.CopyFrom(Resources.Load<TurretStats>("SupportTurret/SupportTurretStats" + level));
         GetComponent<MeshRenderer>().material = Resources.Load<Material>("SupportTurret/Material" + level);
     }
 

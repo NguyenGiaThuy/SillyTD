@@ -31,14 +31,14 @@ public class ArtilleryShell : Projectile
         switch (target.armor)
         {
             case Mob.ArmorType.Light:
-                finalDamage = finalDamage * 1.25f;
+                finalDamage = finalDamage * 1f;
                 break;
             case Mob.ArmorType.Medium:
-                finalDamage = finalDamage * 1.25f;
+                finalDamage = finalDamage * 1f;
                 break;
             case Mob.ArmorType.Heavy:
-                finalDamage = finalDamage * 1.25f;
-                break;
+                finalDamage = finalDamage * 1f;
+                break;    
         }
         return Mathf.RoundToInt(finalDamage);
     }
