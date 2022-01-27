@@ -357,7 +357,7 @@ MonoBehaviour:
     lives: 5000
     researchPoints: 0
   levelIndex: 0
-  sceneLoadingTime: 2
+  sceneLoadingTime: 5
   autoSaveFrequency: 1
 --- !u!4 &136439057
 Transform:

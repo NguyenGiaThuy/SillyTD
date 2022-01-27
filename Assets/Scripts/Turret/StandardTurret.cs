@@ -6,7 +6,8 @@ public class StandardTurret : AttackTurret
     {
         ID = 0;
         canAntiAir = true;
-        turretStats = Resources.Load<TurretStats>("StandardTurret/StandardTurretStats" + level);
+        turretStats = ScriptableObject.CreateInstance<TurretStats>();
+        turretStats.CopyFrom(Resources.Load<TurretStats>("StandardTurret/StandardTurretStats" + level));
         OnLevelIncreased += StandardTurret_OnLevelIncreased;
     }
 
@@ -17,7 +18,7 @@ public class StandardTurret : AttackTurret
 
     private void StandardTurret_OnLevelIncreased()
     {
-        turretStats = Resources.Load<TurretStats>("StandardTurret/StandardTurretStats" + level);
+        turretStats.CopyFrom(Resources.Load<TurretStats>("StandardTurret/StandardTurretStats" + level));
         transform.GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("StandardTurret/Material" + level);
         transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("StandardTurret/Material" + level);
         transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("StandardTurret/Material" + level);

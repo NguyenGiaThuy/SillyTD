@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5175cd418c489447afd0a64fee2dde2, type: 3}
   m_Name: ArtilleryStats2
   m_EditorClassIdentifier: 
-  damage: 120
+  damage: 60
   explosionRadius: 10
   fireRate: 5
   minRange: 10

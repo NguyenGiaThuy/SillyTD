@@ -310,7 +310,7 @@ SubShader {
 		#include "UnityCG.cginc"
 		#include "Lighting.cginc"
 
-		#define UNITY_PASS_SHADOWCASTER
+		//#define UNITY_PASS_SHADOWCASTER
 		// #include "UnityBuiltin3xTreeLibrary.cginc" // We can not do this as we want instancing
 		#define USE_VFACE
 		#define LEAFTUMBLING

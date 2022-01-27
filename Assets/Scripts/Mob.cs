@@ -15,19 +15,25 @@ public class Mob : MonoBehaviour
 
     [Header("Game Specifications", order = 0)]
     public ArmorType armor;
-    public int healthPoints;
-    public float movementSpeed;
     public int killCredits;
     public int killResearchPoints;
     public int lifeDamage;
+    [SerializeField]
+    private int healthPoints;
+    [SerializeField]
+    private float rotationSpeed;
+    [SerializeField]
+    private float movementSpeed;
 
     [Header("Unity Specifications", order = 0)]
-    public Transform[] wayPointsToMove;
-    public int nextWayPointIndex;
-    public Vector3 nextDirection;
     [SerializeField]
     private GameObject hitEffectPrefab;
-    
+
+    private Transform[] wayPointsToMove;
+    private int nextWayPointIndex;
+    private Vector3 nextDirection;
+
+
     private void Awake()
     {
         Counter++;
@@ -35,7 +41,9 @@ public class Mob : MonoBehaviour
 
     private void FixedUpdate()
     {
-        transform.Translate(nextDirection.normalized * movementSpeed * Time.deltaTime, Space.World);
+        transform.Translate(nextDirection.normalized * movementSpeed * Time.fixedDeltaTime, Space.World);
+        Quaternion lookRotation = Quaternion.LookRotation(nextDirection);
+        transform.rotation = Quaternion.SlerpUnclamped(transform.rotation, lookRotation, rotationSpeed * Time.fixedDeltaTime);
 
         // If destination is reached, find next destination 
         Transform nextWayPoint = wayPointsToMove[nextWayPointIndex];
@@ -94,7 +102,7 @@ public class Mob : MonoBehaviour
             // Play animation
             // Play sound effect
             OnDead?.Invoke(this);
-            Destroy(gameObject, 0.5f);
+            Destroy(gameObject, 0.25f);
         }
     }
 }
