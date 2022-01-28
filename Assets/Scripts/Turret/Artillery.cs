@@ -4,10 +4,10 @@ public class Artillery : AttackTurret
 {
     private void Awake()
     {
-        ID = 2;
+        id = 2;
         canAntiAir = false;
-        turretStats = ScriptableObject.CreateInstance<TurretStats>();
-        turretStats.CopyFrom(Resources.Load<TurretStats>("Artillery/ArtilleryStats" + level));
+        turretParameter = ScriptableObject.CreateInstance<TurretParameter>();
+        turretParameter.CopyFrom(Resources.Load<TurretParameter>("Artillery/ArtilleryStats" + levels));
         OnLevelIncreased += Artillery_OnLevelIncreased;
     }
 
@@ -18,9 +18,9 @@ public class Artillery : AttackTurret
 
     private void Artillery_OnLevelIncreased()
     {
-        turretStats.CopyFrom(Resources.Load<TurretStats>("Artillery/ArtilleryStats" + level));
-        transform.GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("Artillery/Material" + level);
-        transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("Artillery/Material" + level);
-        transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("Artillery/Material" + level);
+        turretParameter.CopyFrom(Resources.Load<TurretParameter>("Artillery/ArtilleryStats" + levels));
+        transform.GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("Artillery/Material" + levels);
+        transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("Artillery/Material" + levels);
+        transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("Artillery/Material" + levels);
     }
 }

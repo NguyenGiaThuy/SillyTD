@@ -3,8 +3,7 @@ using UnityEngine;
 [CreateAssetMenu]
 public class TurretBlueprint : ScriptableObject
 {
-    public int id;
-    public int buildCost;
-    public int[] upgradeCosts;
-    public GameObject turretPrefab;
+    public int id { get { return turretPrefab.GetComponent<Turret>().id; } }
+    public TurretParameter[] turretParameters { get; private set; }
+    public GameObject turretPrefab { get; private set;  } 
 }

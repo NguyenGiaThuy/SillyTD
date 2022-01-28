@@ -9,7 +9,7 @@ public class ArtilleryShell : Projectile
         Vector3 offsetForce = force;
         offsetForce.y = transform.position.y - 1f;
         GetComponent<Rigidbody>().AddForce((force.normalized + offsetForce) * speed * Random.Range(0.9f, 1.1f), ForceMode.Impulse);
-        explosionRadius = sourceTurret.turretStats.explosionRadius;
+        explosionRadius = sourceTurret.turretParameter.explosionRadius;
         Destroy(gameObject, 5f);
     }
 
@@ -27,7 +27,7 @@ public class ArtilleryShell : Projectile
     protected override int GetFinalDamge()
     {
         // Calculate damage for each armor type
-        float finalDamage = sourceTurret.turretStats.damage;
+        float finalDamage = sourceTurret.turretParameter.damage;
         switch (target.armor)
         {
             case Mob.ArmorType.Light:

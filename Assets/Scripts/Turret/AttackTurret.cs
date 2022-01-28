@@ -41,7 +41,7 @@ public abstract class AttackTurret : Turret
 
     private void Start()
     {
-        fireCountdown = turretStats.fireRate - 1f;
+        fireCountdown = turretParameter.fireRate - 1f;
         SetNewState(TurretState.Idling);
         StartCoroutine(SearchTarget());
         audioSource = GetComponent<AudioSource>();
@@ -63,13 +63,13 @@ public abstract class AttackTurret : Turret
         }
 
         // Reload
-        if (fireCountdown <= turretStats.fireRate) fireCountdown += Time.deltaTime;
+        if (fireCountdown <= turretParameter.fireRate) fireCountdown += Time.deltaTime;
     }
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.DrawWireSphere(transform.position, turretStats.minRange);
-        Gizmos.DrawWireSphere(transform.position, turretStats.maxRange);
+        Gizmos.DrawWireSphere(transform.position, turretParameter.minRange);
+        Gizmos.DrawWireSphere(transform.position, turretParameter.maxRange);
     }
 
     protected void SetNewState(TurretState newTurretState)
@@ -86,8 +86,8 @@ public abstract class AttackTurret : Turret
         while (true)
         {
             // If target is out of range, search new target
-            if (target == null || Vector3.Distance(transform.position, target.transform.position) > turretStats.maxRange 
-                || Vector3.Distance(transform.position, target.transform.position) < turretStats.minRange)
+            if (target == null || Vector3.Distance(transform.position, target.transform.position) > turretParameter.maxRange 
+                || Vector3.Distance(transform.position, target.transform.position) < turretParameter.minRange)
             {
                 // Search for ground and flying mobs
                 GameObject[] groundMobs = GameObject.FindGameObjectsWithTag("GroundMob");
@@ -115,8 +115,8 @@ public abstract class AttackTurret : Turret
             float targetDistance = Vector3.Distance(transform.position, mob.transform.position);
             float targetDistanceFromEndPoint = mob.GetCurrentPathLength();
 
-            if (targetDistance <= turretStats.maxRange 
-                && targetDistance >= turretStats.minRange 
+            if (targetDistance <= turretParameter.maxRange 
+                && targetDistance >= turretParameter.minRange 
                 && targetDistanceFromEndPoint < closestDistanceFromEndPoint)
             {
                 closestTargetFromEndPoint = mob;
@@ -159,7 +159,7 @@ public abstract class AttackTurret : Turret
         }
 
         // Fire if reloaded
-        if (fireCountdown > turretStats.fireRate)
+        if (fireCountdown > turretParameter.fireRate)
         {
             audioSource.Play();
 

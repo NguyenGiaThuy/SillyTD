@@ -29,7 +29,7 @@ public abstract class Projectile : MonoBehaviour
     
     private void Start() 
     {
-        explosionRadius = sourceTurret.turretStats.explosionRadius;
+        explosionRadius = sourceTurret.turretParameter.explosionRadius;
     }
 
     private void Update()

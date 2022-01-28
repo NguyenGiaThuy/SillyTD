@@ -12,20 +12,20 @@ public class SupportTurret : Turret
 
     private void Awake()
     {
-        ID = 3;
-        turretStats = ScriptableObject.CreateInstance<TurretStats>();
-        turretStats.CopyFrom(Resources.Load<TurretStats>("SupportTurret/SupportTurretStats" + level));
+        id = 3;
+        turretParameter = ScriptableObject.CreateInstance<TurretParameter>();
+        turretParameter.CopyFrom(Resources.Load<TurretParameter>("SupportTurret/SupportTurretStats" + levels));
         StartCoroutine(BuffNearbyTurrets());
         OnLevelIncreased += SupportTurret_OnLevelIncreased;
     }
 
     private void OnDestroy()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, turretStats.maxRange, 1 << LayerMask.NameToLayer("BuffedTurret"));
+        Collider[] colliders = Physics.OverlapSphere(transform.position, turretParameter.maxRange, 1 << LayerMask.NameToLayer("BuffedTurret"));
         foreach (Collider collider in colliders)
         {
             AttackTurret turret = collider.GetComponent<AttackTurret>();
-            turret.turretStats.damage = Mathf.RoundToInt(turret.turretStats.damage / damageMultiplier);
+            turret.turretParameter.damage = Mathf.RoundToInt(turret.turretParameter.damage / damageMultiplier);
             turret.aura.SetActive(false);
             turret.gameObject.layer = LayerMask.NameToLayer("Turret");
         }
@@ -34,8 +34,8 @@ public class SupportTurret : Turret
 
     private void SupportTurret_OnLevelIncreased()
     {
-        turretStats.CopyFrom(Resources.Load<TurretStats>("SupportTurret/SupportTurretStats" + level));
-        GetComponent<MeshRenderer>().material = Resources.Load<Material>("SupportTurret/Material" + level);
+        turretParameter.CopyFrom(Resources.Load<TurretParameter>("SupportTurret/SupportTurretStats" + levels));
+        GetComponent<MeshRenderer>().material = Resources.Load<Material>("SupportTurret/Material" + levels);
     }
 
     private IEnumerator BuffNearbyTurrets()
@@ -44,11 +44,11 @@ public class SupportTurret : Turret
         while (true)
         {
             
-            Collider[] colliders = Physics.OverlapSphere(transform.position, turretStats.maxRange, 1 << LayerMask.NameToLayer("Turret"));
+            Collider[] colliders = Physics.OverlapSphere(transform.position, turretParameter.maxRange, 1 << LayerMask.NameToLayer("Turret"));
             foreach (Collider collider in colliders)
             {
                 AttackTurret turret = collider.GetComponent<AttackTurret>();
-                turret.turretStats.damage = Mathf.RoundToInt(damageMultiplier * turret.turretStats.damage);
+                turret.turretParameter.damage = Mathf.RoundToInt(damageMultiplier * turret.turretParameter.damage);
                 turret.aura.SetActive(true);
                 turret.gameObject.layer = LayerMask.NameToLayer("BuffedTurret");
             }
@@ -59,7 +59,7 @@ public class SupportTurret : Turret
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.DrawWireSphere(transform.position, turretStats.minRange);
-        Gizmos.DrawWireSphere(transform.position, turretStats.maxRange);
+        Gizmos.DrawWireSphere(transform.position, turretParameter.minRange);
+        Gizmos.DrawWireSphere(transform.position, turretParameter.maxRange);
     }
 }

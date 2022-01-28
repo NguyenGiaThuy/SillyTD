@@ -4,10 +4,10 @@ public class MissileLauncher : AttackTurret
 {
     private void Awake()
     {
-        ID = 1;
+        id = 1;
         canAntiAir = true;
-        turretStats = ScriptableObject.CreateInstance<TurretStats>();
-        turretStats.CopyFrom(Resources.Load<TurretStats>("MissileLauncher/MissileLauncherStats" + level));
+        turretParameter = ScriptableObject.CreateInstance<TurretParameter>();
+        turretParameter.CopyFrom(Resources.Load<TurretParameter>("MissileLauncher/MissileLauncherStats" + levels));
         OnLevelIncreased += MissileLauncher_OnLevelIncreased;
     }
 
@@ -18,9 +18,9 @@ public class MissileLauncher : AttackTurret
 
     private void MissileLauncher_OnLevelIncreased()
     {
-        turretStats.CopyFrom(Resources.Load<TurretStats>("MissileLauncher/MissileLauncherStats" + level));
-        transform.GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("MissileLauncher/Material" + level);
-        transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("MissileLauncher/Material" + level);
-        transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("MissileLauncher/Material" + level);
+        turretParameter.CopyFrom(Resources.Load<TurretParameter>("MissileLauncher/MissileLauncherStats" + levels));
+        transform.GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("MissileLauncher/Material" + levels);
+        transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("MissileLauncher/Material" + levels);
+        transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material = Resources.Load<Material>("MissileLauncher/Material" + levels);
     }
 }
