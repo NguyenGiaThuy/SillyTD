@@ -81,12 +81,6 @@ public class GameManager : MonoBehaviour
     {
         switch (gameState)
         {
-            case GameStateManager.GameState.Preparing:
-                if(previousGameState == GameStateManager.GameState.Pausing) UnPauseGame();
-                break;
-            case GameStateManager.GameState.Playing:
-                if (previousGameState == GameStateManager.GameState.Pausing) UnPauseGame();
-                break;
             case GameStateManager.GameState.Victorious:
                 Debug.Log("Victorious");
                 levelIndex++;
